@@ -1,0 +1,6 @@
+/.vscode
+/.svn
+/node_modules
+/.DS_Store
+/api/.DS_Store
+/api/node_modules

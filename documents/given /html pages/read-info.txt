@@ -1,0 +1,23 @@
+vue js examples of 
+1 Reuseability 
+2 Encapsulation
+3 Portablity 
+4 organize
+5 (Readablity ) easy to use
+
+apis given bellow 
+
+ var bynderApiDoc={'actions':[{'action':'Retrieve_all_campaigns',apiUrl:'https://greatminds.getbynder.com/api/workflow/campaigns/'},
+         {'action':'Retrieve_all_metaproperties', apiUrl:'https://greatminds.getbynder.com/api/workflow/metaproperties/'},
+         {'action': 'campaignsjobs', apiUrl :'https://greatminds.getbynder.com/api/workflow/campaigns/0ad18ec8-8648-4d15-8681-2c3f4e0ee914/jobs/'},
+                 {'action': 'storeorder', apiUrl : 'https://greatminds.getbynder.com/api/store/order/'},
+                 {'action': 'workflowusers', apiUrl : 'https://greatminds.getbynder.com/api/workflow/users/'},
+                 {'action': 'workflowgroups', apiUrl : 'https://greatminds.getbynder.com/api/workflow/groups/'}
+ ]}
+
+ //url: 'https://greatminds.getbynder.com/api/workflow/metaproperties',  ++Done
+  //url: 'https://greatminds.getbynder.com/api/workflow/campaigns',              ++Done
+  //url: 'https://greatminds.getbynder.com/api/workflow/campaigns/0ad18ec8-8648-4d15-8681-2c3f4e0ee914/jobs/',  ++ campaignsjobs ++pending
+  //url: 'https://greatminds.getbynder.com/api/store/order/',                                                                                                   ++order
+  //url: 'https://greatminds.getbynder.com/api/workflow/users/',                                                                                                ++users
+  //url: 'https://greatminds.getbynder.com/api/workflow/groups/', 

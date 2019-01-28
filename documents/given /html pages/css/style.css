@@ -1,0 +1,54 @@
+
+body {background: #f6f6f6;}
+.chart-icon{font-size: 14px;}
+.chart-icon a {text-decoration: none; color: #9eacb4;}
+.chart-icon a:hover {text-decoration: none;}
+canvas {-moz-user-select: none;		-webkit-user-select: none;		-ms-user-select: none;}
+/* Custom tag form start*/
+
+.prices.tags #tags {
+  float: left;
+  border: 1px solid #ccc;
+  padding: 2px;
+ border-radius: .25rem;    width: 100%;
+}
+.prices.tags #tags > span {
+    cursor: pointer;
+    display: block;
+    float: left;
+    color: #fff;
+    background: #789;
+    padding: 4px;
+    padding-right: 22px;
+    margin: 2px;
+    font-size: 13px;
+}
+.prices.tags #tags > span:hover {
+  opacity: 0.85;
+}
+.prices.tags #tags > span:hover:after {
+  color: #f00;
+}
+.prices.tags #tags > span:after {
+  position: absolute;
+  content: "×";
+  padding: 0px 2px;
+  margin-left: 5px;
+  font-size: 12px;
+}
+.prices.tags #tags > input {
+    background: #eee;
+    border: 0;
+    margin: 2px;
+    padding: 3px;
+    width: auto;
+    font-size: 14px;
+}
+.prices > input {
+  display: block;
+  clear: both;
+}
+.prices.tags > input {
+  display: none;
+}
+/* Custom tag form end*/

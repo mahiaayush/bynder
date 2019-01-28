@@ -21,4 +21,3 @@ npm run lint
 ```
 # bynder
 # bynder
-# bynder

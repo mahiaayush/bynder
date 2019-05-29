@@ -1,5 +1,6 @@
-const HOST_URL="http://localhost:4000";
+//const HOST_URL="http://localhost:4000";
 //  const HOST_URL="http://greatmindsapi.mpstechnologies.com";
+const HOST_URL="http://greatmindapi.mpstechnologies.com";
 
 const API_URL=HOST_URL+"/posts/getAllcampaigns";
 //const JobType_URL=HOST_URL+"/data/metapropertiesbyid/";

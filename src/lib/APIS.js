@@ -1,15 +1,28 @@
 const HOST_URL="http://localhost:4000";
+//  const HOST_URL="http://greatmindsapi.mpstechnologies.com";
+
 const API_URL=HOST_URL+"/posts/getAllcampaigns";
-const JobType_URL=HOST_URL+"/data/metapropertiesbyid/";
+//const JobType_URL=HOST_URL+"/data/metapropertiesbyid/";
+const JobType_URL=HOST_URL+"/posts/jobtypes/";
 const JobByCampaignId=HOST_URL+"/posts/jobsbycampaignid/";
 const getjobsbycampaignid=HOST_URL+"/posts/getjobsbycampaignid/";
-
+const JobDuration=HOST_URL+"/posts/getjoburation/";
+const deletetempData=HOST_URL+"/posts/deletetempData/";
+const clearTempData=HOST_URL+"/posts/cleartempdelete/";
+const exportAsExcel=HOST_URL+"/posts/exportAsExcel/";
 const PresetById=HOST_URL+"/posts/getPresetByJobs/";
 const getworkflowPreset=HOST_URL+"/posts/getWorkflowPreset/";
-const ScoreCardData=HOST_URL+"/posts/scorecarddata/";
+///for score card data actions
+const ScoreCardData=HOST_URL+"/scoreCard/scorecarddata/";
 const GradeModule=HOST_URL+"/posts/getgrademodule/";
+const LoadedData=HOST_URL+"/scoreCard/scorecardload/";
+const created_complated=HOST_URL+"/scoreCard/createdcompletedjobs/";
+const medianoverdueperteam=HOST_URL+"/scoreCard/medianoverdueperteam";
+const getOverDueJobs=HOST_URL+"/scoreCard/getoverduejobs";
 const ModuleID="7388493928bc4a9aa57ca65306ed1579";
 const GradeId="c0ac0a86e65f4f7ebd88dbd7e77965ef";
+
+
 const CurrentStatus=[//{'text':'Workflow Preset'},
 
 {'text':'Active'},
@@ -18,8 +31,8 @@ const CurrentStatus=[//{'text':'Workflow Preset'},
 {'text': 'Approved'},
 {'text':'Closed'}];
 const Presets=[
-    {'text':'Permissions'},
-    {'text':'Created Images'},
+    {'text':'Permission'},
+    {'text':'Created Image'},
     {'text':'Shutterstock'},
     {'text':'Clip Art'},
 ];
@@ -58,10 +71,12 @@ export default{
          return data;
     } */, getPrestsGroup(){
         return Presets;
+    }, async  clearTempDelete(){
+        const res= await fetch(clearTempData);
+        return res.json();
     }
     , async getjobsbycampaignid( obj  ){
-        debugger
-      let data;
+        let data;
             await axios.post(getjobsbycampaignid, obj).then(response => {
              data= response.data //, console.log(response.data);
             });
@@ -90,7 +105,7 @@ export default{
      */
     }, async getScoreCardData(obj){
         let data;
-            await axios.get(ScoreCardData , obj).then(response => {
+            await axios.post(ScoreCardData , obj).then(response => {
              data= response.data //, console.log(response.data);
             });
          return data;
@@ -100,6 +115,46 @@ export default{
     }, async getModule(){
         const res= await fetch(GradeModule+ ModuleID);
         return res.json();
+    }, async getJobDurationData(jobId){
+        const res= await fetch(JobDuration+ jobId);
+        return res.json();
+    }, async deletetempData(ids){
+        let data;
+        var ids={ tempIds : ids};
+            await axios.post(deletetempData , ids).then(response => {
+                data= response.data;
+            });
+         return data;
+    }, async exportAsExcel(obj){
+       let data;
+            await axios.post(exportAsExcel , obj).then(response => {
+                data= response.data;
+            });
+         return data;
+    }, async getLoadedData(obj){
+        let data;
+            await axios.post(LoadedData, obj).then(response => {
+                data= response.data;
+            });
+         return data;
+    }, async created_complated(obj){
+        let data;
+            await axios.post(created_complated, obj).then(response => {
+                data= response.data;
+            });
+         return data;
+    }, async medianoverdueperteam(obj){
+        let data;
+            await axios.post(medianoverdueperteam, obj).then(response => {
+                data= response.data;
+            });
+         return data;
+    }, async getOverDueJobs(obj){
+        let data;
+            await axios.post(getOverDueJobs, obj).then(response => {
+                data= response.data;
+            });
+        return data;
     }
 };
 

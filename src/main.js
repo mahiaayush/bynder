@@ -2,11 +2,16 @@ import Vue from 'vue';
 import App from './App.vue';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
-
+import bPagination from 'bootstrap-vue/es/components/pagination/pagination';
+Vue.component('b-pagination', bPagination);
+import Paginate from 'vuejs-paginate'
+Vue.component('paginate', Paginate)
 import VueRouter from 'vue-router';
 Vue.use(VueRouter);
 import BootstrapVue from 'bootstrap-vue';
 Vue.use(BootstrapVue);
+import { Modal } from 'bootstrap-vue/es/components';
+Vue.use(Modal);
 import VueGoogleCharts from 'vue-google-charts';
 Vue.use(VueGoogleCharts);
 import VueAxios from 'vue-axios';
@@ -20,6 +25,12 @@ import EditComponent from './components/EditComponent.vue';
 
 import JobcardviewComponents from './components/JobcardviewComponent.vue';
 import ScorecardviewComponent from './components/ScorecardviewComponent.vue';
+import jobDurationComponent from './components/jobDurationComponent.vue';
+import ScoreCardGridComponents from './components/scoreCardGridComponents.vue';
+import JobcarddataComponents from './components/JobcarddataComponent.vue';
+import moment from 'moment';
+import VModal from 'vue-js-modal';
+Vue.use(VModal);
 //  import store from './store'
 
 //import InputComponents from './components/InputComponents.vue';
@@ -30,22 +41,33 @@ const routes = [
       name: 'home',
       path: '/',
       component: HomeComponent
-  },/*
+  },
+  /*
   {
       name: 'create',
       path: '/create',
       component: CreateComponent
+  },*/
+  {
+      name: 'jobDuration',
+      path: '/jobDuration/:jobid',
+      component: jobDurationComponent
   },
   {
-      name: 'posts',
-      path: '/posts',
-      component: IndexComponent
-  },*/
+    name: 'scoreCardGrid',
+    path: '/scoreCardGrid/:jobid',
+    //scoreCardGridComponents
+    component: ScoreCardGridComponents
+    },
   {
     name:'jobcardview',
     path: '/jobcardview',
     component: JobcardviewComponents
-  },
+  },{
+    name:'jobcarddata',
+    path: '/jobcarddata',
+    component: JobcarddataComponents
+  }, //
   {
     name:'scorecardview',
     path: '/scorecardview',
@@ -58,5 +80,9 @@ const routes = [
 ];
 
 const router = new VueRouter({ mode: 'history', routes: routes});
-
+Vue.filter('formatDate', function(value) {
+  if (value) {
+    return moment(String(value)).format('MM-DD-YYYY');
+  }
+});
 new Vue(Vue.util.extend({ router }, App)).$mount('#app');

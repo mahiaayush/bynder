@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
-
+const mongooseAggregatePaginate = require('mongoose-aggregate-paginate');
+let Schema = mongoose.Schema;
+//.plugin(mongooseAggregatePaginate)
+//Schema.plugin(mongooseAggregatePaginate);
 //Define collection and schema for Post
 let Post = new Schema({
   title: {
@@ -12,20 +14,60 @@ let Post = new Schema({
 },{
     collection: 'posts'
 });
-
+let ExportSheetData= new Schema({
+    job_id : { type: String} ,
+    job_name : { type: String} ,
+    job_key : { type: String} ,
+    preset_name : { type: String} ,
+    curriculum_name : { type: String} ,
+    type_of_requested_asset : { type: String} ,
+    job_creator : { type: String} ,
+    job_responsible : { type: String} ,
+    job_date_started : { type: String} ,
+    job_date_finished : { type: String} ,
+    job_duration : { type: String} ,
+    Preset_Stages : { type: Array}, 
+},{
+  collection: 'ExportSheetData'
+});
+let delete_temp_data=new Schema({
+  jobID: { type: String},
+  deletedDate: { type: String},
+  userBy: { type: String},
+},{collection: 'delete_temp_data'});
+let overdue_jobs= new Schema({
+	asset_typeId : { type: String},
+	asset_type : { type: String},
+	tat : { type: Number},
+ },{
+    collection: 'overdue_jobs'
+});
 let bynder_jobs= new Schema({
- id: { type: String},
- jobID:{type:String},
+  id: { type: String},
+  jobID:{type:String},
+  risk:{type: String},
+  impact:{type: String},
   name: { type: String},
   deadline: { type: String},
   description: { type: String},
-  dateCreated: { type: String},
+  dateCreated: { type:  Date },
+  job_date_started: { type:  Date },
   basedOnPreset: Boolean,
   presetID: { type: String},
+  presetName: { type: String},
+  presetstages:{ type: Array}, 
   dateModified: { type: String},
   campaignID: { type: String},
   job_previous_stage :{ type: Map},
-  job_active_stage:{type: Map},
+  job_active_stage : { type: Map },
+  job_next_stage : { type: Map },
+  job_stages:{ type : Array },
+  job_key : { type:  String },
+  job_date_finished : { type:  Date },
+  job_duration : { type:  String },
+  Preset_Stages : { type:  Array },
+  presetDataC:{type: Array},
+  autoStage:{type: Array},
   accountableID: { type: String},
   createdByID: { type: String},
   jobMetaproperties:{ type: Map},
@@ -33,10 +75,13 @@ let bynder_jobs= new Schema({
   useBrandstoreApproval: { type: Boolean},
   loadPreset:{ type: Boolean},
   loadMeta:{ type: Boolean},
+  isMerged:{type : Boolean},
+  isUpdated:{type : Boolean}
  },{
     collection: 'bynder_jobs'
-}
-);
+});
+//bynder_jobs.plugin(mongooseAggregatePaginate);
+
   let job_presets= new Schema({
        ID: { type: String} ,
        name: { type: String},
@@ -106,5 +151,8 @@ let campaign=new Schema({
       metaproperties : mongoose.model('metaproperties', metaproperties),
       users: mongoose.model('users', users),
       campaign: mongoose.model('campaign', campaign),
+      ExportSheetData: mongoose.model('ExportSheetData', ExportSheetData),
+      delete_temp_data: mongoose.model('delete_temp_data', delete_temp_data),
+      overdue_jobs:mongoose.model('overdue_jobs', overdue_jobs),
     };
   module.exports = Mdb;

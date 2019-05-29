@@ -1,0 +1,73 @@
+<script>
+
+var data=  {
+  	"_id" : "5c9cda7e4b647e74c65de2e5",
+    "jobMetaproperties" : {
+		"65eb3eba55c045b28eb8646f6163b7e4" : "",
+		"3e7c3efd5cbf42b49cb8be76deee8778" : "",
+		"1b3fec3ef6c145428a982952cc90a891" : "f93457b82c72473e802bde37e5accdcc",
+		"2780795bf3084a29b32201dfc2280cdb" : "",
+		"8cdb13ea293549cea302801450ed6722" : "",
+		"c0ac0a86e65f4f7ebd88dbd7e77965ef" : "91d1b2f867d243edb8fa93cc1e3bc621",
+		"b447dc7d70b0420a8ac9ec9aeff78296" : "test",
+		"89fabfe2b19c49579a09c579109361ab" : "1",
+		"4b8da57c218c40c99441bbf095d36686" : "f049a7a4d6604245810d8ab946a944e6",
+		"93e36ce874dc4edc8f1d4e1c45e33804" : "",
+		"dde4714035904b0cb68888e0acf389b2" : "test",
+		"f8bf767302224972a79fd80f7fb36d12" : "5b8e35356cc3433084889a2a9579c552",
+		"252b25e4694a44e796c51094afeaf310" : "",
+		"6dcd9fd188dd44bcba4850d5fa262db9" : "",
+		"87d538e6d3a442468b20426285aef253" : "test",
+		"c6f6a6a20ca54a6eaccb9f832678ce66" : "",
+		"79f40329e5534215840d7000ee4b0dc6" : "",
+		"57046bf7e7624ab5bc4b8e16664b4cf8" : "2019-03-28",
+		"2d7734452f1b4c8d915aaa299c0cdfab" : "test",
+		"7388493928bc4a9aa57ca65306ed1579" : "08ec4c1f344f4f24bb9dc3a256c7ec60",
+		"f4214a8168bf47f399e0c785a37a05ee" : "",
+		"9862589aae3841bdb241da8ac9a9da1d" : "",
+		"262f92ed59b14c3aa74d6877d7f8ba4c" : "1689aacf9c6342dd8735b8f6000e734d",
+		"e68f9b5642894370bb4f3480cfdaf691" : "",
+		"0790cd4f2aed4ce0a315ff8034a43994" : "C28FBE2C-C8B5-42E1-B25E18B5DEB0C941",
+		"309909b0de3f4eb9b5674efe59bee8b9" : "4dc4b08d0b53447cb325660c5bb54d12",
+		"42088b14276944779808b7a75a20b970" : "",
+		"ccf531b93d1c46428aa5c52bc8cc639f" : "SCI-1274",
+		"a8fe022985f1491397b51ab219ec0c31" : "",
+		"e9074f5b472f41d4a92ac511e53da775" : "2019-03-28",
+		"4e16a6bd03c6440a98e3bcfe8ef1ab27" : "test",
+		"79d51a26a78644dcb498b8f98d447cbf" : "",
+		"c0b45231a3f142ac8c9c13af8d0fe31f" : "",
+		"9b94517751824194baa2683956b9ee06" : ""
+	}};
+  var risk={};
+  //  f8bf767302224972a79fd80f7fb36d12 == Permission Impact Rating
+          //  309909b0de3f4eb9b5674efe59bee8b9 == Permission Risk Rating
+  var riskFactor=[{incodeID: '81d0fdd04c274b609da8c6cddb115844', name: 'No Risk'},
+         {incodeID: '4dc4b08d0b53447cb325660c5bb54d12', name: 'Low Risk'},
+         {incodeID: 'a6f65fd332314106a6257a139f00c5e1', name: 'Medium Risk'},
+         {incodeID: '2798b65516db4135b2fb93fd94d725a2', name: 'High Risk'},
+         ];
+  var ImpactFactor=[
+         {incodeID: 'fc5f49de0bd649d7aaf9082606382d46', name: 'Low Impact'},
+         {incodeID: 'a4befbeecd644f70a520d71eb96159f3', name: 'Medium Impact'},
+         {incodeID: '5b8e35356cc3433084889a2a9579c552', name: 'High Impact'},
+         ];
+var allowedKeys = ['309909b0de3f4eb9b5674efe59bee8b9','f8bf767302224972a79fd80f7fb36d12'];
+var jobMetaproperties=data.jobMetaproperties;
+var  filtered  = Object.keys(jobMetaproperties)
+  .filter(key => key=="309909b0de3f4eb9b5674efe59bee8b9")
+  .reduce((obj, key) => {
+    obj= riskFactor.filter((data)=> data.incodeID==jobMetaproperties[key]);
+    if(obj.length >0){
+      obj=obj[0].name;
+    }else{
+      obj="";
+    }
+    return obj;
+  }, {});
+
+
+  console.log("filtered", filtered);
+  console.log("data", data);
+//  f8bf767302224972a79fd80f7fb36d12 == Permission Impact Rating
+//  309909b0de3f4eb9b5674efe59bee8b9 == Permission Risk Rating
+</script>

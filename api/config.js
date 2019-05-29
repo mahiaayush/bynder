@@ -26,7 +26,7 @@ var appConfig = {
          }else{
             this.request_data.url=data[0].URL;
          }
-         console.log(this.request_data);
+        // console.log(this.request_data);
         return this.request_data;
     },
     getConsumer(){

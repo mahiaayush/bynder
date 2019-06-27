@@ -8,6 +8,7 @@
   :Module='Module'
   :Grade="Grade"
   :curStatusDts='curStatusDts' :frmDataSubmit="frmDataSubmit" :frm="frm"
+  :searchBykey='searchBykey'
   ></input-components>
 
   <filters-table-vue 
@@ -92,6 +93,37 @@ import { parse } from 'path';
         console.log("data is given ", response);
         return response;
         
+      },
+       async searchBykey(job_key){
+        var data =  await APIS.getjobsbyJobkey(job_key);
+        var presetName,jobMetaproperties, compaignId, ObjData=new Object();
+        if(data.rows.length >0){
+          presetName=data.rows[0].presetName, jobMetaproperties=data.rows[0].jobMetaproperties, ObjData.compaignId= data.rows[0].compaignId ;
+        if(presetName.indexOf('Permission') > -1){
+          if(jobMetaproperties.hasOwnProperty('262f92ed59b14c3aa74d6877d7f8ba4c')){
+            var keys=Object.keys(jobMetaproperties), values= Object.values(jobMetaproperties);
+            for(let temp=0; temp < keys.length; temp++ ){
+              if(keys[temp] == "262f92ed59b14c3aa74d6877d7f8ba4c"){
+                ObjData.jobType=values[temp];
+                break;
+              }
+            }
+          }else{
+            ObjData.jobType='Unallocated';
+          }
+          ObjData.workflowPreset="Permission";
+        }else if(presetName.indexOf('Created Image') > -1){
+          ObjData.workflowPreset="Created Image";
+        }else if(presetName.indexOf('Shutterstock') > -1){
+          ObjData.workflowPreset="Shutterstock";
+        }else if(presetName.indexOf('Clip Art') > -1){
+          ObjData.workflowPreset="Clip Art";
+        }
+        }
+        this.results=data.rows;
+        this.totalRows=data.rowCount;
+        this.totalPages= 1;
+        return ObjData;
       },
       clearTempData(data){
         for(let dtID in data){

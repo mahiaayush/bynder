@@ -78,7 +78,17 @@ const routes = [
       component: EditComponent
   }
 ];
-
+String.prototype.decode=function(){
+ // Array.prototype.insert = function ( index, item ) { 
+   /// this.splice( index, 0, item ); };
+  var a= this.split("");
+  a.splice( 8, 0 , "-");
+  a.splice( 13, 0 , "-");
+  a.splice( 18, 0 , "-");
+  a.splice( 23, 0 , "-");
+ // a.insert(23,"-");
+  return a.join("");
+};
 const router = new VueRouter({ mode: 'history', routes: routes});
 Vue.filter('formatDate', function(value) {
   if (value) {

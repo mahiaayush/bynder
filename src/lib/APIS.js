@@ -7,6 +7,7 @@ const API_URL=HOST_URL+"/posts/getAllcampaigns";
 const JobType_URL=HOST_URL+"/posts/jobtypes/";
 const JobByCampaignId=HOST_URL+"/posts/jobsbycampaignid/";
 const getjobsbycampaignid=HOST_URL+"/posts/getjobsbycampaignid/";
+const getJobByKey=HOST_URL+"/posts/getJobByKey/";
 const JobDuration=HOST_URL+"/posts/getjoburation/";
 const deletetempData=HOST_URL+"/posts/deletetempData/";
 const clearTempData=HOST_URL+"/posts/cleartempdelete/";
@@ -75,6 +76,13 @@ export default{
     }, async  clearTempDelete(){
         const res= await fetch(clearTempData);
         return res.json();
+    }, async getjobsbyJobkey(jobkey){
+        var obj={ job_key: jobkey};
+        let data;
+            await axios.post(getJobByKey, obj).then(response => {
+             data= response.data //, console.log(response.data);
+            });
+         return data;
     }
     , async getjobsbycampaignid( obj  ){
         let data;

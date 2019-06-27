@@ -68,8 +68,56 @@ postRoutes.route('/getWorkflowPreset/:campaignId').get(function (req, res) {
           res.send(result);
         }
       });
-  });
+  }); 
 // --- Job card view action data 
+postRoutes.route('/getJobByKey/').post(function (req, res) {
+  console.log("\n\n ACTION getJobByKey data=>", JSON.stringify(req.body));
+  let job_key='';
+  if(req.body.job_key ){
+    job_key=req.body.job_key;
+
+  }
+  let query=[{"$project":{"presetstages":1,"presetName":1,"isUpdated":1,"impact":1,"risk":1,"job_key":1,"id":1,"jobMetaproperties":1,"name":1,"job_duration":1,"job_date_finished":1,"dateCreated":1,"job_active_stage":1,"presetID":1,"createdByID":1,"campaignID":1,"jobID":1,"Preset_Stages":1,
+    "CalDuration":{"$cond":{"if":{"$eq":["$job_date_finished",""]},"then":{"$divide":[{"$subtract":[new Date(),"$dateCreated"]},86400000]},
+    "else":{"$cond":{"if":{"$eq":["$job_date_finished",null]},
+    "then":{"$divide":[{"$subtract":[new Date(),"$dateCreated"]},86400000]},
+    "else":{"$divide":[{"$subtract":["$job_date_finished","$dateCreated"]},86400000]}}}}}}},
+    {"$lookup":{"localField":"campaignID","from":"campaign","foreignField":"ID","as":"joincollection3"}},
+    {$match: {job_key : job_key}}];
+    console.log("Query: ==>", JSON.stringify( query));
+    Mdb.bynder_jobs.aggregate( query ).then((result)=>{
+      
+      //res.send( data); 
+      var arrayMetakeys=[];
+          for (var key in result) {
+            if(result[key].hasOwnProperty('jobMetaproperties')){
+              for(var key2 in result[key].jobMetaproperties){
+                if(arrayMetakeys.indexOf(key2)==-1){
+                  arrayMetakeys.push(key2);
+                }
+              }
+            }
+          }
+            Mdb.metaproperties.find({tempId: { $in: arrayMetakeys }},{ label: 1, tempId: 1, options:1 }, function (err, rs) {
+              for (var key=0; key<result.length; key++) {
+              result[key].jobMetaData=[];
+              if(result[key].hasOwnProperty('jobMetaproperties')){
+               var data={};
+                for(var key2 in result[key].jobMetaproperties){
+                  for(var dt in rs){
+                   if(rs[dt].tempId==key2){
+                      result[key].jobMetaData.push({label: rs[dt].label, tempId: rs[dt].tempId,options: rs[dt].options});
+                    }
+                  }
+                }
+              }
+             }
+             var queryRes={rowCount:1, rows: result};
+             res.send(JSON.stringify(queryRes));
+            });
+    
+    }).catch((Err)=>{ console.log("Err in find", query);});
+});
 postRoutes.route('/getjobsbycampaignid/').post(function (req, res) {
 
   console.log("\n\n ACTION getjobsbycampaignid data=>", JSON.stringify(req.body));

@@ -11,13 +11,13 @@ let connection = mysql.createConnection(config);
 let Mdb = require('./post.model');
 let appConfig=require('./config');
 
-Array.prototype.insert = function ( index, item ) { this.splice( index, 0, item ); };
+//Array.prototype.insert = function ( index, item ) { this.splice( index, 0, item ); };
 String.prototype.decode=function(){
-  var a= this.split("")
-  a.insert(8,"-");
-  a.insert(13,"-");
-  a.insert(18,"-");
-  a.insert(23,"-");
+  var a= this.split("");
+  a.splice( 8, 0 , "-");
+  a.splice( 13, 0 , "-");
+  a.splice( 18, 0 , "-");
+  a.splice( 23, 0 , "-");
   return a.join("");
 };
 

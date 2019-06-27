@@ -105,14 +105,6 @@
             <div class="col-md-4">
               <div class="form-group">
                 <label for="jobEndDate">Job Date Completed</label>
-                <!-- <HotelDatePicker
-                v-model="frm.endDateRange"
-                :startDate="new Date('2018-01-01')"
-                format="YYYY-MM-DD"  
-                :i18n="StartdateRange"
-                @checkInChanged="startDateRangeIn"
-                @checkOutChanged="startDateRangeOut"
-                ></HotelDatePicker> -->
                 <date-range-picker 
                 v-model="frm.endDate"
                 @update="update_endDate"
@@ -120,35 +112,17 @@
                 :value="EndDateValue"
                 :dateId="dateId2"
                 ></date-range-picker>
-                <!-- <input v-model="frm.endDate" type="date" class="form-control" id="jobEndDate"> -->
               </div>
             </div>
-           
-           <!-- <div class="col-md-4">
-              <div class="form-group">
-                <label for="formGroupExampleInput2"> Job Stages</label>
-                <select v-model="frm.stages" class="form-control" id="jobstage">
-                  <option value="">None Selected</option>
-                  <option value="" v-if="jobTypes.length==0" >Loading ..</option>
-                  <option 
-                  v-for="jobType in jobTypes" 
-                  :value="jobType.ID">{{jobType.label}}</option>
-                </select>
-              </div>
-            </div> -->
             </div>
-          <!-- <div class=" row mt-3">
-            </div> -->
         </div>
       </div>
       </div>
-      
     <div class="col-12 text-right mt-2">
      <button class="btn btn-dark btn-sm rounded-0 mr-1" href="#" type="submit">Search</button>
      <!-- <a class="btn btn-secondary  btn-sm rounded-0" href="#" @click.prevent="cancle_data" role="button">Reset</a> -->
       <button type="reset" class="btn btn-secondary  btn-sm rounded-0" role="button" @click="cancle_data">Reset</button>
     </div>
-
     </form>
     <div class="col-12  mt-2">
       <label v-if="ActiveLavel">Active Jobs</label>
@@ -161,8 +135,6 @@
         <div class="card-body">
           <div class="row">
               <div class="col-4">
-                
-                
               <table class="table table-striped table-bordered">
                 <tbody>
                   <tr>
@@ -219,17 +191,6 @@
                       :options="MedianTeamOveOptions"></GChart>
                   </div>
             </div>
-            <!-- <div class="col-md-6 mb-2">
-            	    <div  class="w-100 border p-2">
-                    <div class="loading-box">
-                    <img src="loading.gif" class="loader">
-                    </div>
-                   <GChart
-                      type="ColumnChart"
-                      :data="Percentile10Data"
-                      :options="Percentile10Options"></GChart>
-                  </div>
-            </div> -->
             <div class="col-md-12 mb-2">
             	    <div  class="w-100 border p-2">
                     <div class="loading-box">
@@ -279,7 +240,6 @@
      </div>
       <ScoreCardGridComponents></ScoreCardGridComponents>
     </div>
-   
 </template>
 <script>
 import APIS from '@/lib/APIS';
@@ -327,110 +287,48 @@ import DateRangePicker from '@/components/dateRangePicker.vue';
       autocompleteItems : APIS.getCurrentStatus(),
       autoworkflowPreset : [], //APIS.getworkflowPreset,
       ScoreCard:{ totalJobs:"N/A", Exptat:"N/A", MedianDur:"N/A", NumOver:'N/A', NumHold:"N/A"},
-      validation: [{
-        classes: 'min-length',
-        rule: tag => tag.text.length < 6,
-      }, {
-        classes: 'no-numbers',
-        rule: /^([^0-9]*)$/,
-      }, {
-        classes: 'avoid-item',
-        rule: /^(?!Cannot).*$/,
-        disableAdd: true,
-      }, {
-        classes: 'no-braces',
-        rule: ({ text }) => text.indexOf('{') !== -1 || text.indexOf('}') !== -1,
-      }],
+      validation: [{ classes: 'min-length',  rule: tag => tag.text.length < 6, }, 
+      { classes: 'no-numbers',  rule: /^([^0-9]*)$/, }, { classes: 'avoid-item', rule: /^(?!Cannot).*$/, disableAdd: true,},
+      { classes: 'no-braces', rule: ({ text }) => text.indexOf('{') !== -1 || text.indexOf('}') !== -1, }],
       WeeklyJobsCData:[['Weeks', 'Created Jobs','Completed Jobs'],
                       // ['1 jan -7 jan', 5, 2],
                       // ['8 jan -15 jan', 25, 11],
                       // ['16 jan -23 jan', 15, 20],
                       ],
       WeeklyJobsCOptions:{title: 'Number of Jobs Created and Completed By Week ',
-						  titleTextStyle: { color: '#07212d', fontName: 'Karla', fontSize: '14' },
-						  fontSize:10,
-                          height: 400,
-                          width:700,
-                          animation:{
-                            duration: 1000,
-                            easing: 'out',
-                          },
-                          legend: { position: 'bottom' },
-                          colors: ["#07212D","#FF5B34"]
-                          },
+			titleTextStyle: { color: '#07212d', fontName: 'Karla', fontSize: '14' },
+			fontSize:10, height: 400, width:700, animation:{ duration: 1000, easing: 'out', },
+      legend: { position: 'bottom' }, colors: ["#07212D","#FF5B34"] },
       MedianTeamLoad:true,
-      MedianTeamData:[ ['Duration Days', 'Median Duration'],
-                      // [ 'Permission', 22,],
-                      // [ 'Permission1', 12,],
-                      // [ 'Permission2', 2,],
+      MedianTeamOvrData :[['Duration Days','Clip Art&Storage Team','Content Team','On Hold Team','Permissions Team','Shutterstock Team']
+        // ['Permission', 10, 12,4,0,55],
+        // ['Permission1',  12,4,0,55,10,],
+        // ['Permission2', 10, 12,0,4,55],
+        // ['Permission3', 10, 12,4,0,55]
       ],
-      MedianTeamOptions:{
-         title: 'Median Time Per Team',
-         chart: { title: 'Company Performance'},
-         //bars: 'vertical', vAxis: {format: 'decimal'}, isStacked: true,
-         height: 400,
-          animation:{
-            duration: 1000,
-            easing: 'out',
-          },
-          legend: { position: 'bottom' },
-         // vAxis: {minValue:0, maxValue:50} ,
-         colors: ["#7DBA51","#136353"]
+      MedianTeamOveOptions:{ title: 'Median Time Per Team (In Days)', titleTextStyle: { color: '#07212d', fontName: 'Karla', fontSize: '14' },
+		    fontSize:10, chart: { title: 'Company Performance'}, bars: 'vertical', vAxis: {format: 'decimal'}, isStacked: true,
+        height: 400,  legend: { position: 'bottom' },//colors: ["#7DBA51","#136353"]
+        colors: ["#27b0f0","#7030a0","#009","#ffff01","#d1b914","#92d04f"]
       },
-      MedianTeamOvrData:[['Duration Days','Median Duration (Overdue)'],
-      
-      ],
-      MedianTeamOveOptions:{
-         title: 'Median Time Per Team (In Days)',
-		 titleTextStyle: { color: '#07212d', fontName: 'Karla', fontSize: '14' },
-		 fontSize:10,
-         chart: { title: 'Company Performance'},
-         bars: 'vertical', vAxis: {format: 'decimal'}, //isStacked: true,
-         height: 400, 
-         legend: { position: 'bottom' },
-         colors: ["#7DBA51","#136353"]
-      },
-      Percentile10Data:[ ['Duration Days', '10th Percentile'],
-                      // [ 'Permission', 22,],
-                      // [ 'Permission1', 12,],
-                      // [ 'Permission2', 2,],
-      ],
-      Percentile10Options:{
-         title: '10th Percentile ',
-         chart: { title: 'Company Performance'},
-         bars: 'vertical', vAxis: {format: 'decimal'}, isStacked: true,
-         height: 400, 
-         legend: { position: 'bottom' },
-         colors: ["#136353","#07212D"]
-      },
-      Percentile90Data:[ ['Duration Days', '90th Percentile'],
-                      // [ 'Permission', 22,],
-                      // [ 'Permission1', 12,],
-                      // [ 'Permission2', 2,],
+      Percentile90Data:[ ['Duration Days','Clip Art&Storage Team','Content Team','On Hold Team','Permissions Team','Shutterstock Team'] 
+      ['Permission', 10, 12,4,0,55],
+        ['Permission1',  12,4,0,55,10,],
+        ['Permission2', 10, 12,0,4,55],
+        ['Permission3', 10, 12,4,0,55]
       ],
       Percentile90Options:{
-         title: '10th & 90th Percentile (In Days)',
-		 titleTextStyle: { color: '#07212d', fontName: 'Karla', fontSize: '14' },
-		 fontSize:10,
-         chart: { title: 'Company Performance'},
-         bars: 'vertical', vAxis: {format: 'decimal'}, //isStacked: true,
-         height: 400, 
-         legend: { position: 'bottom' },
-         colors: ["#136353","#07212D"]
+         title: '10th & 90th Percentile (In Days)', titleTextStyle: { color: '#07212d', fontName: 'Karla', fontSize: '14' },
+		     fontSize:10, chart: { title: 'Company Performance'}, bars: 'vertical', vAxis: {format: 'decimal'}, //isStacked: true,
+         height: 400,  legend: { position: 'bottom' },  colors: ["#27b0f0","#7030a0","#009","#ffff01","#d1b914","#92d04f"]
       },
-      totalJobsData : [
-        ['Jobs Name', 'In Progress', 'Hold', 'Completed'],
+      totalJobsData:[['Jobs Name', 'In Progress', 'Hold', 'Completed'],
         //['-', 0, 0, 0],
       ],
-      totalJobsOptions : {
-        title: 'Total Jobs',
-		titleTextStyle: { color: '#07212d', fontName: 'Karla', fontSize: '14' },
-		fontSize:10,
-        chart: { title: 'Total Jobs'},
-        bars: 'vertical', vAxis: {format: 'decimal'},
-        height: 400, 
-        legend: { position: 'bottom' },
-        colors: ['#7DBA51', '#FF5B34', '#07212D']
+      totalJobsOptions :{
+        title: 'Total Jobs', titleTextStyle: { color: '#07212d', fontName: 'Karla', fontSize: '14' },
+		    fontSize:10, chart: { title: 'Total Jobs'}, bars: 'vertical', vAxis: {format: 'decimal'},
+        height: 400, legend: { position: 'bottom' }, colors: ['#7DBA51', '#FF5B34', '#07212D']
       },
       totalHoldJobData: [
         ['Jobs Name',  'Hold'],
@@ -438,18 +336,14 @@ import DateRangePicker from '@/components/dateRangePicker.vue';
         // ['tw-', 1 ],
         // ['tq1-', 7 ],
         // ['tws1-', 8],
-      ],totalHoldJobOptions : {
-        title: 'Jobs On Hold',
-		titleTextStyle: { color: '#07212d', fontName: 'Karla', fontSize: '14' },
-		fontSize:10,
-        chart: { title: 'Company Performance'},
+      ],
+      totalHoldJobOptions : {
+        title: 'Jobs On Hold', titleTextStyle: { color: '#07212d', fontName: 'Karla', fontSize: '14' },
+		    fontSize:10, chart: { title: 'Company Performance'},
         bars: 'vertical', vAxis: {format: 'decimal'}, isStacked: true,
-        height: 400,
-        legend: { position: 'bottom' },
-        colors: ['#FF5B34']
+        height: 400,  legend: { position: 'bottom' }, colors: ['#FF5B34']
       },
-      averageDurationData :[
-                ['Jobs Name', 'Average Duration'],
+      averageDurationData :[['Jobs Name', 'Average Duration'],
                 // ['t1', 15, 7],
                 // ['t2', 20, 7],
                 // ['t1', 13, 8],
@@ -459,10 +353,8 @@ import DateRangePicker from '@/components/dateRangePicker.vue';
         title: 'Average Job Duration',
         chart: {  subtitle: 'Sales, Expenses, and Profit: 2014-2017'},
         bars: 'vertical', vAxis: {format: 'decimal'}, isStacked: true,
-        height: 400, colors: ['#d95f02', '#7570b3' ],
-        legend: { position: 'bottom' }
+        height: 400, colors: ['#d95f02', '#7570b3' ], legend: { position: 'bottom' }
       }
-
     }
     },
     created(){
@@ -503,7 +395,6 @@ import DateRangePicker from '@/components/dateRangePicker.vue';
       },
       async openModalDuration(overDueIDs){
         var overDueJobs= await APIS.getOverDueJobs({overDueIDs:overDueIDs});
-        debugger
         this.$children[this.$children.length-1].items=overDueJobs;
         this.$modal.show('hello-world');
       },
@@ -554,8 +445,6 @@ import DateRangePicker from '@/components/dateRangePicker.vue';
        }
      },
      async frmScoreCardDate(){
-       debugger
-       
        this.isloading=true;
        var a=[];
        var tags=this.tags;
@@ -567,7 +456,7 @@ import DateRangePicker from '@/components/dateRangePicker.vue';
       this.frm.currentStatus=a;
       let score1=await APIS.getScoreCardData(this.frm);
       this.getLoadedData(this.frm);
-      
+
       score1=score1.chartData1and2;
       let dataChart= [ ['Jobs Name',   'In Progress', 'Hold',  'Completed'],
                  // ['test1 ', 1, 2, 3],
@@ -582,7 +471,7 @@ import DateRangePicker from '@/components/dateRangePicker.vue';
                 // ['t2', 20, 7],
               ];
           var campaignIDS=[], totalFilterdJobs=0, totalFilterdJobsHold=0;
-          for(var dt in score1){
+          for(var dt in  score1){
             if(score1[dt]._id.status!="Cancelled"){
               totalFilterdJobs= totalFilterdJobs+ score1[dt].count;
               if(score1[dt]._id.status=="NeedsChanges"){
@@ -623,139 +512,98 @@ import DateRangePicker from '@/components/dateRangePicker.vue';
        var jobsStatus=data.jobsStatus;
        //var FinishedJobs=data.GraphCreatedJobs.FinishedJobs;
 
-       var GraphCreatedJobs=await APIS.created_complated(this.frm);//.CreatedJobs;
-       var MedianData=await APIS.medianoverdueperteam(this.frm);
-       var mediamOverDue=MedianData.OverDueData;
-       for(let kin in mediamOverDue){
-         if(mediamOverDue[kin].jobDuration && mediamOverDue[kin].jobDuration.length> 0){
-            var dataJobDuration= mediamOverDue[kin].jobDuration;
-              for(let k2in in  dataJobDuration){
-                if(typeof dataJobDuration[k2in] =="String" &&dataJobDuration[k2in].indexOf(" days")>-1){
-                  mediamOverDue[kin].jobDuration[k2in] = parseInt( dataJobDuration[k2in].split(" days")[0]);
-                }else{
-                  mediamOverDue[kin].jobDuration[k2in] = parseInt( dataJobDuration[k2in]);
-                }
-                
-              }
-         }
-      }
-    //  debugger
+      var GraphCreatedJobs=await APIS.created_complated(this.frm);//.CreatedJobs;
+      var MedianData=await APIS.medianoverdueperteam(this.frm);
+      var mediamOverDue=MedianData.OverDueData;
+      mediamOverDue=mediamOverDue.map(data => ({
+          teams: data.teams, 
+          resteams:  responcibleTeam(data.currentStage, data.teams), 
+          jobDuration:data.jobDuration,
+          overDueIds: data.overDueIds,
+          overDueCount:data.overDueCount
+        }));
+      
       var permissionResponce=data.permissionResponce;
-      var permissionArray=permissionResponce.filter((data)=>data.permission=="Permission");
-      var CreatedImageArray=permissionResponce.filter((data)=>data.permission=="Created Image");
-      var CreatedImageArrayDuration=[];
-      // if(CreatedImageArray.length>0){
-      //   var data=mediamOverDue.filter((data)=>data.permission=="Created Image");
-      //   for(let tt in data){
-      //     CreatedImageArrayDuration.push(data[tt].CalDuration);
-      //   }
-      // }
-      var ShutterStockArray=permissionResponce.filter((data)=>data.permission=="Shutterstock");
-      // var ShutterStockArrayDuration=[];
-      // if(ShutterStockArray.length>0){
-      //   var data=ShutterStockArray[0].data;
-      //   for(let tt in data){
-      //     ShutterStockArrayDuration.push(data[tt].CalDuration);
-      //   }
-      // }
-      var ClipArtArray=permissionResponce.filter((data)=>data.permission=="Clip Art");
-      // var ClipArtArrayDuration=[];
-      // if(ClipArtArray.length>0){
-      //   var data=ClipArtArray[0].data;
-      //   for(let tt in data){
-      //     ClipArtArrayDuration.push(data[tt].CalDuration);
-      //   }
-      // }
-      //
-      var  TotalPermissionJobDuration=[];
+      permissionResponce=permissionResponce.map(d=>  d.data.map(dd=>({ jobDuration: dd.duration, CalDuration: dd.CalDuration, resteams:  responcibleTeam(dd.stageName, d.permission), teams:d.permission ,  }) ));
+      var permissionRes=[];
+      for(let dd of permissionResponce){ permissionRes= permissionRes.concat(dd); }
+      var MedianTeamOvrData=[['Duration Days','Clip Art&Storage Team','Content Team','On Hold Team','Permissions Team','Shutterstock Team']];
+      var Percentile90Data=[['Duration Days','Clip Art&Storage Team','Content Team','On Hold Team','Permissions Team','Shutterstock Team']];
+      var medData=[];
+      var Groups=['Permission','Created Image','Shutterstock','Clip Art'];
+      var Teams=['Clip Art & Storage Team','Content Team', 'On Hold Team','Permissions Team', 'Shutterstock Team'];
+      debugger
+        for( let grp of Groups ){
+            let teamsGroupData=permissionRes.filter(data =>data.teams==grp /*&& data.resteams== team*/ );
+            let teamsOVERData=mediamOverDue.filter(data =>data.teams==grp );
+            var data=new Array( grp +" Median" );
+            var percentileData10=new Array(grp+ " 10th percentile"),  percentileData90=new Array(grp +" 90th percentile");
+            for(let team of Teams){
+              var mediam=0, percentile10=0, percentile90=0, teamData= teamsGroupData.filter(data=> data.resteams== team);
+              if(teamData.length >0){
+                var jobDuration= teamData.map((a,i)=>a.jobDuration);
+                mediam=getMedian2(jobDuration);
+                percentile10=getPersentiles(jobDuration,10); 
+                percentile90=getPersentiles(jobDuration,90);
+              }
+              data.push( mediam );
+              percentileData10.push(percentile10);
+              percentileData90.push(percentile90);
+            }
+            Percentile90Data.push(percentileData10);
+            Percentile90Data.push(percentileData90);
+            MedianTeamOvrData.push(data);
+            var dt2=new Array( grp +" Overdue");
+            for(let team of Teams){
+              var mediamOver=0, teamData= teamsOVERData.filter(data=> data.resteams== team);
+              if(teamData.length >0){
+                var dt= teamData.reduce((a, b)=>({ jobDuration: a.jobDuration.concat(b.jobDuration)}));
+                mediamOver=getMedian2(dt.jobDuration);
+              }
+              dt2.push( mediamOver );
+            }
+            MedianTeamOvrData.push(dt2);
+        }
+      /*
+      var permissionArray=permissionResponce.filter((data)=>data.team=="Permission");
+      var CreatedImageArray=permissionResponce.filter((data)=>data.team=="Created Image");
+      var ShutterStockArray=permissionResponce.filter((data)=>data.team=="Shutterstock");
+      var ClipArtArray=permissionResponce.filter((data)=>data.team=="Clip Art");
+      // devide Team Wise Data Code //
+      
+      debugger
       var permissionData=mediamOverDue.filter((data)=>data.teams=="Permission");
-      for (let temp in permissionData){
-        for(let temp2 in permissionData[temp].jobDuration){
-          TotalPermissionJobDuration.push( permissionData[temp].jobDuration[temp2]  );
-        }
+      var PermissionTeam1=permissionData.filter( dt => dt.resteams=='Art Team');
+      var duration1=[];
+      if(PermissionTeam1.length > 0){
+        var red= PermissionTeam1.reduce((a, b)=>({ jobDuration: a.jobDuration.concat(b.jobDuration)})); 
+        duration1=red.jobDuration;
+        
       }
-      var MedianTeamOvrData=[['Duration Days',"Median Time ",'Median Duration (Overdue)']];
-      
-       if(permissionData.length >0){
-         var permissionOverDueMedian=getMedian2(TotalPermissionJobDuration);
-         MedianTeamOvrData.push([   "Permissions Team", combineMediun(permissionArray) , permissionOverDueMedian]);
-      }
-      
-      //-- ShutterStock
-      var ShutterStockData= mediamOverDue.filter((data)=>data.teams=="Shutterstock");
-      var ShutterStockJobDuration=0, ShutterStockMedianDuration=0;
-      if(ShutterStockData.length >0){
-         ShutterStockJobDuration =getMedian2(ShutterStockData[0].jobDuration);
-         MedianTeamOvrData.push([   "Shutterstock Team", combineMediun(ShutterStockArray), ShutterStockJobDuration]);
-      }
-      
-
-
-
-      
-       //-- Created Image
-      var Created_ImageData= mediamOverDue.filter((data)=>data.teams=="Created Image");
-      if(Created_ImageData.length >0){
-        var Created_ImageMedian =getMedian2(Created_ImageData[0].jobDuration);
-        MedianTeamOvrData.push([   "Art Team", combineMediun(CreatedImageArray), Created_ImageMedian]);
-      }
-      
-      //-- Clip Art
-      
-      var Clip_Art= mediamOverDue.filter((data)=>data.teams=="Clip Art");
-      if(Clip_Art.length >0){
-        var Clip_ArtMedian =getMedian2(Clip_Art[0].jobDuration);
-        MedianTeamOvrData.push([   "Clip Art Team", combineMediun(ClipArtArray),Clip_ArtMedian]);
-      }
-      
      
 
-
-       var GTat=MedianData.GTat;
-       //let overDueJobs=0;
-       let overDueJobs=0, overDueIds=[], perCount=0,perArray=[];
+      var TotalPermissionJobDuration=[];
+      if(permissionData.length >0 ){ 
+        var reduce=permissionData.reduce( (a, b) => ({jobDuration : a.jobDuration.concat(b.jobDuration)  })); 
+        TotalPermissionJobDuration= reduce.jobDuration;
+      }
+      */
+      var GTat=MedianData.GTat;
+      //let overDueJobs=0;
+      let overDueJobs=0, overDueIds=[], perCount=0,perArray=[], allIDs=[];
+      if(mediamOverDue.length >0){
+        overDueJobs=mediamOverDue.reduce((a, b)=> a+ b.overDueCount,0);
+        allIDs=mediamOverDue.reduce( (a, b) => ({overDueIds : a.overDueIds.concat(b.overDueIds)  })); 
+        overDueIds=allIDs.overDueIds;
+      }
       
-
-       
-       for(let i in mediamOverDue){
-         overDueJobs=overDueJobs+ mediamOverDue[i].overDueCount;
-          var color="red";
-          if( mediamOverDue[i].teams=="Permission"){
-            perCount=perCount+mediamOverDue[i].overDueCount;
-            for(let j in mediamOverDue[i].overDueIds){
-              perArray.push(mediamOverDue[i].overDueIds[j]);
-            }
-            
-           color= '#FDEE19' ;
-          }else if( mediamOverDue[i].teams=="ShutterStock"){
-           color=  '#EB7C1B' ;
-          }else if( mediamOverDue[i].teams=="Clip Art"){
-           color=  '#1BEB67' ;
-          }else if( mediamOverDue[i].teams=="Created Image"){
-           color=  '#1B1BEB' ;
-          }
-          if( mediamOverDue[i].teams!="Permission"){
-           // MedianTeamOvrData.push([   mediamOverDue[i].teams, mediamOverDue[i].overDueCount, color]);
-          }
-          if(mediamOverDue[i].overDueIds && mediamOverDue[i].overDueIds.length>0){
-            for(let j in mediamOverDue[i].overDueIds){
-              overDueIds.push(mediamOverDue[i].overDueIds[j]);
-            }
-          }
-        }
-       // MedianTeamOvrData.push([   "Permission", perCount, "yellow"]);
-
-     
-      
-       
-       var MonthName=["Jan","Feb","Mar","Apr","May","Jun", "Jul","Aug","Sep","Oct", "Nov","Dec"];
-       this.WeeklyJobsCData=[['Weeks', 'Created Jobs','Completed Jobs']];
+      var MonthName=["Jan","Feb","Mar","Apr","May","Jun", "Jul","Aug","Sep","Oct", "Nov","Dec"];
+      this.WeeklyJobsCData=[['Weeks', 'Created Jobs','Completed Jobs']];
       // weekly data set formate 
       // GraphCreatedJobs.FinishedData
       // GraphCreatedJobs.CreatedData
       // GraphCreatedJobs.EndTime
       // GraphCreatedJobs.StartTime
-      //debugger
       var startDate=new Date(GraphCreatedJobs.StartTime);
       var endDate= new Date(GraphCreatedJobs.EndTime);
       var dataFormate=[];
@@ -784,20 +632,10 @@ import DateRangePicker from '@/components/dateRangePicker.vue';
       for(let i in dataFormate){
          this.WeeklyJobsCData.push([ dataFormate[i].dateRange, dataFormate[i].Created , dataFormate[i].FinshedJobs ]);
       }
-      //  for(let i in GraphCreatedJobs){
-      //   var OldDate=new Date(GraphCreatedJobs[i].CreatedJobs[0].OldDate);
-      //   var NewDate= new Date(GraphCreatedJobs[i].CreatedJobs[0].NewDate);
-      //   var weekrange=OldDate.getDate() +" "+ MonthName[OldDate.getMonth()] +"-"+
-      //   NewDate.getDate()+" "+  MonthName[NewDate.getMonth()];
-      //     this.WeeklyJobsCData.push([
-      //     weekrange,
-      //     GraphCreatedJobs[i].CreatedJobs[0].count,
-      //     GraphCreatedJobs[i].FinishedJobs[0].count
-      //    ]);
-      //  }
-       this.isloading=false;
-       console.log("this.WeeklyJobsCData :", this.WeeklyJobsCData);
-       var holdJobs=0, totalJobs=0;
+      this.isloading=false;
+
+      /// Status wise jobs set on graph
+      var holdJobs=0, totalJobs=0;
        for( let k in jobsStatus){
           if(jobsStatus[k]._id.status=="NeedsChanges"){
             holdJobs=holdJobs+jobsStatus[k].count;
@@ -806,126 +644,49 @@ import DateRangePicker from '@/components/dateRangePicker.vue';
             totalJobs=totalJobs+jobsStatus[k].count;
           }
        }
-      
       var sortable_all=[];
       var sortable = [];
-      var allPermissionJobDuration=0,allCreatedJobDuration=0, allShutterstockJobDuration=0,
+      var allPermissionJobDuration=0, allCreatedJobDuration=0, allShutterstockJobDuration=0,
       allClipArtJobDuration=0;
-      var MedianTeamData=[ ['Duration Days', 'Median Duration' ]];
-      var Percentile10Data=[['Duration Days', '10th Percentile' ]];
-      var Percentile90Data=[['Duration Days', '10th Percentile' ,'90th Percentile' ]];
-      var averageDurationData=[[ 'Duration Days', 'Average Duration' ]];
-      if(permissionArray.length>0){
-          var permission =permissionArray[0].data;
-          for (var keys in permission) {
-              allPermissionJobDuration=allPermissionJobDuration+ permission[keys].duration;
-              sortable.push([ permission[keys].id , permission[keys].duration]);
-              sortable_all.push([ permission[keys].id , permission[keys].duration]);
-          }
-          
-          var PermissionMedian= getMedian(sortable);
-          var percentile10 =getPercentile(sortable, 10);
-          var percentile90 = getPercentile(sortable, 90);
-          var averageDur=allPermissionJobDuration/(sortable.length-1);
-          MedianTeamData.push( [ 'Permissions Team', PermissionMedian ]);
-          Percentile10Data.push( [ 'Permissions Team', percentile10 ]);
-          Percentile90Data.push( [ 'Permissions Team',percentile10, percentile90]);
-          averageDurationData.push( [ 'Permissions Team', averageDur ] );
-      }
-      if(CreatedImageArray.length>0 ){
-          var createdArray=CreatedImageArray[0].data;
-          sortable=[];
-          for (var keys in createdArray) {
-              allCreatedJobDuration=allCreatedJobDuration+ createdArray[keys].duration ;
-              sortable.push([ createdArray[keys].id , createdArray[keys].duration ]);
-              sortable_all.push([ createdArray[keys].id , createdArray[keys].duration]);
-          }
-          var CreatedMedian= getMedian(sortable);
-          var percentile10 =getPercentile(sortable, 10);
-          var percentile90 =getPercentile(sortable, 90);
-          var averageDur=allCreatedJobDuration/(sortable.length-1);
-          Percentile10Data.push( [ 'Art Team', percentile10 ]);
-          Percentile90Data.push( [ 'Art Team',percentile10, percentile90]);
-          MedianTeamData.push( [ 'Art Team', CreatedMedian ]);
-          averageDurationData.push( [ 'Art Team', averageDur ] );
-      }
-      if(ShutterStockArray.length> 0){
-          var shutterstockArray=ShutterStockArray[0].data;
-          sortable=[];
-          for (var keys in shutterstockArray) {
-              allShutterstockJobDuration=allShutterstockJobDuration+ shutterstockArray[keys].duration ;
-              sortable.push([ shutterstockArray[keys].id , shutterstockArray[keys].duration]);
-              sortable_all.push([ shutterstockArray[keys].id , shutterstockArray[keys].duration]);
-          }
-          var ShutterStockMedian= getMedian(sortable);
-          var percentile10 =getPercentile(sortable, 10);
-          var percentile90 =getPercentile(sortable, 90);
-          var averageDur=allShutterstockJobDuration / (sortable.length-1);
-          Percentile10Data.push( [ 'ShutterStock Team', percentile10 ]);
-          Percentile90Data.push( [ 'ShutterStock Team',percentile10, percentile90 ]);
-          MedianTeamData.push( [ 'ShutterStock Team', ShutterStockMedian ]);
-          averageDurationData.push( [ 'ShutterStock Team', averageDur ] );
-      }
-      if(ClipArtArray.length >0){
-         var clipartArray=ClipArtArray[0].data;
-          sortable=[];
-          for (var keys in clipartArray) {
-              allClipArtJobDuration=allClipArtJobDuration+ clipartArray[keys].duration ;
-              sortable.push([ clipartArray[keys].id , clipartArray[keys].duration]);
-              sortable_all.push([ clipartArray[keys].id , clipartArray[keys].duration]);
-          }
-          var ClipArtMedian= getMedian(sortable);
-          var percentile10 =getPercentile(sortable, 10);
-          var percentile90 =getPercentile(sortable, 90);
-          var averageDur=allClipArtJobDuration / (sortable.length-1);
-          Percentile10Data.push( [ 'Clip Art Team', percentile10 ]);
-          Percentile90Data.push( [ 'Clip Art Team',percentile10, percentile90 ]);
-          MedianTeamData.push( [ 'Clip Art Team', ClipArtMedian ]);
-          averageDurationData.push( [ 'Clip Art Team', averageDur ] );
-      }
+      // var MedianTeamData=[ ['Duration Days', 'Median Duration' ]];
+      // var Percentile90Data=[['Duration Days', '10th Percentile' ,'90th Percentile' ]];
+      // var averageDurationData=[[ 'Duration Days', 'Average Duration' ]];
+      // if(permissionArray.length>0){
+      //     var permission =permissionArray[0].data;
+      //     for (var keys in permission) {
+      //         allPermissionJobDuration=allPermissionJobDuration+ permission[keys].duration;
+      //         sortable.push([ permission[keys].id , permission[keys].duration]);
+      //         sortable_all.push([ permission[keys].id , permission[keys].duration]);
+      //     }
+      //     var percentile10 =getPercentile(sortable, 10);
+      //     var percentile90 = getPercentile(sortable, 90);
+      //     Percentile90Data.push( [ 'Permissions Team', percentile10, percentile90]);
+      // }
      
       var AllMedian= getMedian(sortable_all);
-
       this.overDueIds=overDueIds;
+      debugger
       this.MedianTeamOvrData=MedianTeamOvrData;
-      //debugger
       if(GTat!=0){
         this.ScoreCard.Exptat=GTat;
       }else{
         this.ScoreCard.Exptat="N/A";
       }
-      
       this.ScoreCard.NumOver=overDueJobs;
-
-      //totalJobDuration
-      //alert(AllMedian[1]);
-       if(AllMedian){
+      if(AllMedian){
          AllMedian=parseFloat(AllMedian).toFixed(1);
        }
-       this.ScoreCard.MedianDur= AllMedian;
-
-       //this.ScoreCard.totalJobs=totalJobs;
-       //this.ScoreCard.NumHold=holdJobs;
-
-       this.MedianTeamLoad=false;
-       this.MedianTeamData=MedianTeamData;
-       this.Percentile10Data=Percentile10Data;
-       this.Percentile90Data=Percentile90Data;
-       this.averageDurationData=averageDurationData;
-       
+      this.ScoreCard.MedianDur= AllMedian;
+      this.MedianTeamLoad=false;
+      this.Percentile90Data=Percentile90Data;
+     // this.averageDurationData=averageDurationData;
      }
-
-   }
+    }
   }
-
 function getMedian2(arrays){
-  //debugger
-   arrays.sort(function(a, b) {
-          return a - b;
-      });
-      var data="";
-   // console.log("getMedian", arrays);
-    if(arrays.length < 2){
+  arrays.sort(function(a, b) {  return a - b; });
+  var data="";
+  if(arrays.length < 2){
       if(arrays[0]!=null){
         data=arrays[0];
       }else{
@@ -977,7 +738,25 @@ function getMedian(arrays){
     }
     return data||0;
 }
+function getPersentiles(arrays, value){
+    var data=0,roundValue=0, nextVal = 0; 
+    arrays= arrays.sort(function(a,b) { return a - b;});
+    var rank=value*(arrays.length)/100;
+    if( value*(arrays.length)%100==0 ){
+      data=arrays[rank];
+    }else {
+      roundValue= Math.floor(rank,1 );
+          if(roundValue<1){
+            nextVal = roundValue+1;
+          } else{
+            nextVal = roundValue-1;
+          }
+          data = (arrays[roundValue]+arrays[nextVal])/2;
+    }
+    return data;
+}
 function getPercentile(arrays, percentileValue){
+  debugger
       arrays.sort(function(a, b) {
           return a[1] - b[1];
       });
@@ -985,7 +764,6 @@ function getPercentile(arrays, percentileValue){
       var data=0;
       var roundValue=0;
       var nextVal = 0;
-      var fractionValue = 0;
       var counts=arrays.length;
       if(arrays.length < 2){
       if(arrays[0]!=null){
@@ -1099,6 +877,65 @@ function MpsDateFormat(d) {
   if (month.length < 2) month = '0' + month;
   if (day.length < 2) day = '0' + day;
   return [year, month, day].join('-');
+}
+function responcibleTeam(name, PresetName){
+  var Teamname="";
+ if(name!=""){
+   if(name.toLowerCase().indexOf("research asset and original source")!=-1 ||
+   name.toLowerCase().indexOf("select job type")!=-1 ||
+   name.toLowerCase().indexOf("copyright status")!=-1 ||
+   name.toLowerCase().indexOf("contract negotiation and asset procurement")!=-1 ||
+   name.toLowerCase().indexOf("review image permissions")!=-1 ||
+   name.toLowerCase().indexOf("asset approval")!=-1 ||
+   name.toLowerCase().indexOf("a&p record keeping")!=-1 ){
+     Teamname="Permissions Team";
+   }else if(name.toLowerCase().indexOf("waiting room preflight")!=-1 && !!PresetName && PresetName.indexOf("Permission")!=-1){
+     Teamname="Permissions Team";
+   }
+   else if(name.toLowerCase().indexOf("art production lead assigns designer")!=-1 ||
+    name.toLowerCase().indexOf("create asset")!=-1 ||
+    name.toLowerCase().indexOf("designer create asset")!=-1 ||
+    name.toLowerCase().indexOf("review image design and quality")!=-1 ||
+    name.toLowerCase().indexOf("art production lead review")!=-1 ||
+    name.toLowerCase().indexOf("team lead/designer creates asset")!=-1 ||
+    name.toLowerCase().indexOf("team lead assigns designer")!=-1 ||
+    name.toLowerCase().indexOf("waiting room preflight")!=-1 ){
+      Teamname="Art Team";
+   }
+   else if(name.toLowerCase().indexOf("search the dam for existing assets")!=-1 ||
+   name.toLowerCase().indexOf("verify permissions and upload the")!=-1 ||
+   name.toLowerCase().indexOf("evaluate asset and assign for further action ")!=-1 ||
+   name.toLowerCase().indexOf("search the DAM for existing assets ")!=-1 ||
+   name.toLowerCase().indexOf("waiting room preflight (for clip art or storage workflow) ")!=-1 ||
+   name.toLowerCase().indexOf("approve and upoad asset to the waiting room")!=-1 ){
+     Teamname="Clip Art & Storage Team";
+   }else if(name.toLowerCase().indexOf("complete image research and provide options to writer")!=-1 ||
+   name.toLowerCase().indexOf("upload final image")!=-1 ){
+     Teamname="Shutterstock Team";
+   }else if(name.toLowerCase().indexOf("content team feedback and approval")!=-1 ||
+   name.toLowerCase().indexOf("feedback and approval")!=-1 ||
+   name.toLowerCase().indexOf("math audit review")!=-1 ||
+   name.toLowerCase().indexOf("math managing editor feedback and approval")!=-1 ||
+   name.toLowerCase().indexOf("complete request form")!=-1 ||
+   name.toLowerCase().indexOf("content team feedback and approval")!=-1 ||
+   name.toLowerCase().indexOf("feedback and approval")!=-1 ||
+   name.toLowerCase().indexOf("fpo math audit")!=-1 ||
+   name.toLowerCase().indexOf("rejected asset notification")!=-1 ){
+     Teamname="Content Team";
+   }else{
+     Teamname="On Hold Team";
+   }
+ }
+ return Teamname;
+}//getRandomColor
+function getColorByName( name ) {
+ var color="#ffff01";
+ var colorData= new Array({color:"#ffff01", name:"Permissions Team"},{color:"#92d04f", name:"Art Team"},
+ {color:"#d1b914",name:"Shutterstock Team"},{color:"#27b0f0", name: "Clip Art & Storage Team"},{color:"#7030a0", name:"Content Team"});
+  for(let temp of colorData){
+    if(temp.name==name){ color=temp.color; break; }
+  }
+  return color;
 }
 </script>
 <style lang="css" scoped>

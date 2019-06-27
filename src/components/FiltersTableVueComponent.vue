@@ -90,7 +90,7 @@
           <a class="jobId_selector" target="_blank"  :href="'https://greatminds.getbynder.com/workflow/job/view/'+ (result.id.split('-').join('')) "> 
           {{result.presetName}} </a>
         </td>
-        <td>
+         <td>
           <a target="_blank" :href="'https://greatminds.getbynder.com/workflow/job/view/'+result.job_key">
           {{result.job_key}}
           </a>
@@ -234,12 +234,9 @@
                 }
             },
             'Preset': {
-              field: 'presetName', //result.presetName
+              field: 'presetName', 
                 callback: (value) => {
                   var dt=value;
-                  // if(value.length>0 && value[0].hasOwnProperty('name')){
-                  //   dt=value[0].name;
-                  // }
                   return `${dt}`;
                 }
             },

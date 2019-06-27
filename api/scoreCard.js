@@ -240,12 +240,14 @@ postRoutes.route('/scorecarddata').post(function (req, res) {
       }
     };
     //var lookup1=  {"$lookup":{"localField":"presetID","from":"job_presets","foreignField":"ID","as":"joincollection"}};
-    var project1={"$project":{"presetName":1, "jobMetaproperties":1,"name":1,"job_duration":1,"job_date_finished":1,"dateCreated":1,"job_active_stage":1,"presetID":1,"createdByID":1,"campaignID":1,"jobID":1,"jobMetaproperties":1,
+    var project1={"$project":{"jobMetaproperties":1,"presetName":1,"presetstages":1,"job_active_stage":1,"name":1, "dateCreated":1,"job_date_finished":1, "presetID":1,"campaignID":1,"jobID":1,
     "CalDuration":{"$cond":{"if": {"$eq":["$job_date_finished",""]} ,"then":{"$divide":[{"$subtract":[new Date(),"$dateCreated"]},86400000]},
         "else":{
             "$cond":{"if": {"$eq":["$job_date_finished",null]}, "then":  {"$divide":[{"$subtract":[new Date(),"$dateCreated"]},86400000]},
             "else": {"$divide":[{"$subtract":["$job_date_finished","$dateCreated"]},86400000]}}
-        }}}    
+        }}},
+        "stageName": { $filter: { input: "$presetstages", as: "item", cond: { $eq: [ "$$item.position", "$job_active_stage.position" ]}}}
+    
     }};
     Query.push( project1);
 
@@ -257,6 +259,7 @@ postRoutes.route('/scorecarddata').post(function (req, res) {
     if(!workflowPreset){
         for( let temp=0; temp < PermissionsData.length; temp++){
           let serchFilterUnder=[];
+          serchFilterUnder.push({"job_active_stage.status":{"$ne":"Cancelled"}});
           for(let tt=0; tt < serchFilter.length; tt++){
             serchFilterUnder.push(serchFilter[tt] ) ;
           }
@@ -264,7 +267,8 @@ postRoutes.route('/scorecarddata').post(function (req, res) {
           let Query2=[ project1];
           serchFilterUnder.push( { "presetName" : {"$regex": new RegExp(".*"+PermissionsData[temp]+".*") } } ); 
           Query2.push(  { $match: { $and: serchFilterUnder } });
-          //Query2.push(project);
+          var project2={ $project:{ CalDuration:1, stageName: { $arrayElemAt: [ '$stageName.name', 0 ] }, }};
+          Query2.push(project2);
           console.log("without Preset data==>", JSON.stringify(Query2) ,"\n\n");
             await  Mdb.bynder_jobs.aggregate(Query2).then((res)=>{
               //console.log("CalDuration data::==>",res[key].CalDuration);
@@ -301,6 +305,7 @@ postRoutes.route('/scorecarddata').post(function (req, res) {
       serchFilter = serchFilter.length > 0 ? { $and: serchFilter } : {};
       Query.push(  { $match: serchFilter });
     }
+    Query.push( {"$project":{"CalDuration":1,"stageName":{"$arrayElemAt":["$stageName.name",0]}}} );
       /* eslint-disable */ 
       //Query.push(project);
           console.log("Dynamic Search Query==>", JSON.stringify(Query));
@@ -394,35 +399,46 @@ postRoutes.route('/medianoverdueperteam').post(async function(req, res, next) {
           GTat=tat;
           GMatchFilter.push({"CalDuration":{"$gte":tat}});
           GMatchFilter.push({"job_active_stage.status":{"$ne":"Cancelled"}});
-          GMatchFilter.push({"job_active_stage.status":{"$in":["Active","NeedsChanges"]}});
+          //GMatchFilter.push({"job_active_stage.status":{"$in":["Active","NeedsChanges"]}});
           GMatchFilter.push({"presetName":{$regex : new RegExp(".*"+workflowPreset+".*") }});
           if(jobType && jobType=="Unallocated"){ GMatchFilter.push({ "jobMetaproperties.262f92ed59b14c3aa74d6877d7f8ba4c": {"$exists":false} }); }
           else if(jobType){ GMatchFilter.push({ "jobMetaproperties.262f92ed59b14c3aa74d6877d7f8ba4c": jobType }); }
           var overDueQuery=[ //{"$lookup":{"localField":"presetID","from":"job_presets","foreignField":"ID","as":"joincollection1"}},
             {$project: {"campaignID":1,"jobMetaproperties":1,"presetName":1, "job_active_stage":1, "id":1, "job_duration":1, "dateCreated":1, "job_date_finished":1,
                              "CalDuration":{"$cond":{"if":{"$eq":["$job_date_finished",""]},
-        "then":{"$divide":[{"$subtract":[ new Date(),"$dateCreated"]},86400000]},
-        "else":{"$cond":{"if":{"$eq":["$job_date_finished",null]},
-           "then":{"$divide":[{"$subtract":[ new Date(),"$dateCreated"]},86400000]},
-        "else":{"$divide":[{"$subtract":["$job_date_finished","$dateCreated"]},86400000]}}}}}}}        
-        ];
+              "then":{"$divide":[{"$subtract":[ new Date(),"$dateCreated"]},86400000]},
+              "else":{"$cond":{"if":{"$eq":["$job_date_finished",null]},
+                "then":{"$divide":[{"$subtract":[ new Date(),"$dateCreated"]},86400000]},
+              "else":{"$divide":[{"$subtract":["$job_date_finished","$dateCreated"]},86400000]}}}}},
+              "stageName":{ $filter: { input: "$presetstages", as: "item", cond: { $eq: [ "$$item.position", "$job_active_stage.position" ]}}}
+              }}        
+          ];
           if(GMatchFilter.length > 0){
             GMatchFilter = GMatchFilter.length > 0 ? { $and: GMatchFilter } : {};
             overDueQuery.push(  { $match: GMatchFilter });
           }
-          var group={ $group: { _id: "", overDueCount: { $sum: 1 }, overDueIds: {$push: "$id"} , "jobDuration":{"$push": "$CalDuration" }}};
+          var group={ $group: { _id: "$stageName.name", overDueCount: { $sum: 1 }, overDueIds: {$push: "$id"} , "jobDuration":{"$push": "$CalDuration" }}};
           overDueQuery.push(group);
           console.log("\x1b[34m Query for Overdue data Loading",JSON.stringify(overDueQuery) );
           await Mdb.bynder_jobs.aggregate(overDueQuery).then((overDueRes)=>{
            // console.log("overDueRes", workflowPreset ,"===>", overDueRes);
             var overDueCount=0, overDueIds=[], jobDuration=[];
-            if(overDueRes.length > 0 && overDueRes[0].hasOwnProperty('overDueCount')){
-               overDueCount=overDueRes[0].overDueCount;
-               overDueIds=overDueRes[0].overDueIds;
-               jobDuration=overDueRes[0].jobDuration;
+            if(overDueRes.length > 0 /*&& overDueRes[0].hasOwnProperty('overDueCount')*/){
+              for( let overdueData of overDueRes){
+                currentStage=overdueData._id[0];
+                overDueCount=overdueData.overDueCount;
+                overDueIds=overdueData.overDueIds;
+                jobDuration=overdueData.jobDuration;
+                OverDueData.push({teams: workflowPreset, currentStage: currentStage, overDueCount:overDueCount, overDueIds:overDueIds, jobDuration:jobDuration});
+              }
             }
+            // if(overDueRes.length > 0 && overDueRes[0].hasOwnProperty('overDueCount')){
+            //    overDueCount=overDueRes[0].overDueCount;
+            //    overDueIds=overDueRes[0].overDueIds;
+            //    jobDuration=overDueRes[0].jobDuration;
+            // }
             
-            OverDueData.push({teams: workflowPreset, overDueCount:overDueCount, overDueIds:overDueIds, jobDuration:jobDuration });
+            //OverDueData.push({teams: workflowPreset, overDueCount:overDueCount, overDueIds:overDueIds, jobDuration:jobDuration });
            // console.log(overDueRes.length,JSON.stringify(overDueRes));
           }).catch((Err)=>{
             console.log("Err in OverDue data", PermissionsData[k]);
@@ -431,28 +447,22 @@ postRoutes.route('/medianoverdueperteam').post(async function(req, res, next) {
         let PermissionsData=['Created Image','Shutterstock','Clip Art'];
         for(let k=0; k< PermissionsData.length; k++){
           var GlobalFiltes=[];
-          // for(let tt in GMatchFilter){
-          //   GlobalFiltes.push(GMatchFilter[tt] ) ;
-          // }
           var overdueQ=[],QueryTat; var tat=0;
-          if(PermissionsData[k]=="Permission"){
-           // QueryTat={"asset_typeId":'05dedb54-4418-4ea7-89c6-18ef1d188bd5'};
-          }else{
             QueryTat={"asset_typeId":PermissionsData[k]};
             await Mdb.overdue_jobs.find(QueryTat).then((tatData)=>{
               tat= tatData[0].tat
             }).catch((Err)=>{
               console.log("ERror=>", JSON.stringify(QueryTat));
             });
-          }
           var overDueQuery=[/*{"$lookup":{"localField":"presetID","from":"job_presets","foreignField":"ID","as":"joincollection1"}  },*/
-          {$project: {"presetName":1,"jobMetaproperties":1,"presetName":1, "job_active_stage":1, "id":1, "job_duration":1, "dateCreated":1, "job_date_finished":1,
+          {$project: {"jobMetaproperties":1, "presetName":1, "presetstages":1,"job_active_stage":1, "id":1, "dateCreated":1, "job_date_finished":1,
           "CalDuration":{"$cond":{"if": {"$eq":["$job_date_finished",""]} ,"then":{"$divide":[{"$subtract":[new Date(),"$dateCreated"]},86400000]},
             "else":{
               "$cond":{ "if": {"$eq":["$job_date_finished",null]}, "then":  {"$divide":[{"$subtract":[new Date(),"$dateCreated"]},86400000]},
                 "else": {"$divide":[{"$subtract":["$job_date_finished","$dateCreated"]},86400000]}
               }
-            }}}
+            }}},
+            "stageName":{ $filter: { input: "$presetstages", as: "item", cond: { $eq: [ "$$item.position", "$job_active_stage.position" ]}}}
           }}
           ];
           var matchFilter=[];
@@ -467,20 +477,24 @@ postRoutes.route('/medianoverdueperteam').post(async function(req, res, next) {
             matchFilter = matchFilter.length > 0 ? { $and: matchFilter } : {};
             overDueQuery.push(  { $match: matchFilter });
           }
-          var group={ $group: { _id: "", overDueCount: { $sum: 1 }, overDueIds: {$push: "$id"} , "jobDuration":{"$push": "$CalDuration" } }};
+          //var group={ $group: { _id: "", overDueCount: { $sum: 1 }, overDueIds: {$push: "$id"} , "jobDuration":{"$push": "$CalDuration" } }};
+          var group={"$group":{"_id":"$stageName.name","overDueCount":{"$sum":1},"overDueIds":{"$push":"$id"},"jobDuration":{"$push":"$CalDuration"}}};
           overDueQuery.push(group);
-          console.log("\x1b[34m \n Query for Overdue data llll:", JSON.stringify(overDueQuery),"\n\n" );
+          console.log("\x1b[34m \n Query for Overdue data llll:",k,"==>", JSON.stringify(overDueQuery),"\n\n" );
           
           await Mdb.bynder_jobs.aggregate(overDueQuery).then((overDueRes)=>{
            // console.log("overDueRes", PermissionsData[k] ,"===>", overDueRes);
             var overDueCount=0, overDueIds=[], jobDuration=[];
-            if(overDueRes.length > 0 && overDueRes[0].hasOwnProperty('overDueCount')){
-               overDueCount=overDueRes[0].overDueCount;
-               overDueIds=overDueRes[0].overDueIds;
-               jobDuration=overDueRes[0].jobDuration;
+            if(overDueRes.length > 0 /*&& overDueRes[0].hasOwnProperty('overDueCount')*/){
+              for( let overdueData of overDueRes){
+                currentStage=overdueData._id[0];
+                overDueCount=overdueData.overDueCount;
+                overDueIds=overdueData.overDueIds;
+                jobDuration=overdueData.jobDuration;
+                OverDueData.push({teams: PermissionsData[k], currentStage: currentStage, overDueCount:overDueCount, overDueIds:overDueIds, jobDuration:jobDuration});
+              }
             }
-            
-            OverDueData.push({teams: PermissionsData[k], overDueCount:overDueCount, overDueIds:overDueIds, jobDuration:jobDuration});
+           // OverDueData.push({teams: PermissionsData[k], overDueCount:overDueCount, overDueIds:overDueIds, jobDuration:jobDuration});
             console.log( "Over due data length ", overDueRes.length ,"\n");
           }).catch((Err)=>{console.log("Err in OverDue data", PermissionsData[k]);});
         }
@@ -499,13 +513,14 @@ postRoutes.route('/medianoverdueperteam').post(async function(req, res, next) {
             console.log("\n Overdue data TAT is", JSON.stringify(docs), "\n\n");
             for(let dt=1; dt< docs.length; dt++){
                 var overDueQuery=[ //{"$lookup":{"localField":"presetID","from":"job_presets","foreignField":"ID","as":"joincollection1"}},
-                {$project: {"jobMetaproperties":1,"presetName":1, "job_active_stage":1, "id":1, "job_duration":1, "dateCreated":1, "job_date_finished":1,
+                {$project: {"jobMetaproperties":1,"presetName":1,"presetstages":1, "job_active_stage":1, "id":1, "dateCreated":1, "job_date_finished":1,
                 "CalDuration":{"$cond":{"if": {"$eq":["$job_date_finished",""]} ,"then":{"$divide":[{"$subtract":[new Date(),"$dateCreated"]},86400000]},
                 "else":{
                   "$cond":{"if": {"$eq":["$job_date_finished",null]}, "then":  {"$divide":[{"$subtract":[new Date(),"$dateCreated"]},86400000]},
                     "else": {"$divide":[{"$subtract":["$job_date_finished","$dateCreated"]},86400000]}
                   }
-                }}}
+                }}},
+                "stageName":{ $filter: { input: "$presetstages", as: "item", cond: { $eq: [ "$$item.position", "$job_active_stage.position" ]}}}
               }}
               ];
                 var matchFilter=[];
@@ -520,7 +535,8 @@ postRoutes.route('/medianoverdueperteam').post(async function(req, res, next) {
                   matchFilter = matchFilter.length > 0 ? { $and: matchFilter } : {};
                   overDueQuery.push(  { $match: matchFilter });
                 }
-                var group={ $group: { _id: "", overDueCount: { $sum: 1 }, overDueIds: {$push: "$id"} , "jobDuration":{"$push": "$CalDuration" } }};
+                //var group={ $group: { _id: "", overDueCount: { $sum: 1 }, overDueIds: {$push: "$id"} , "jobDuration":{"$push": "$CalDuration" } }};
+                var group={"$group":{"_id":"$stageName.name","overDueCount":{"$sum":1},"overDueIds":{"$push":"$id"},"jobDuration":{"$push":"$CalDuration"}}};
                 overDueQuery.push(group);
                 QuerysPermission.push(overDueQuery);
 
@@ -529,16 +545,19 @@ postRoutes.route('/medianoverdueperteam').post(async function(req, res, next) {
 
        for (let kk =0; kk< QuerysPermission.length; kk++){
         console.log("\x1b[34m \n Query for Overdue data for PermissionsData : LLL", JSON.stringify(QuerysPermission[kk]) ,"\n\n" );
-               
         await Mdb.bynder_jobs.aggregate(QuerysPermission[kk]).then((overDueRes)=>{
-          //console.log("overDueRes Permissions","===>", overDueRes);
-          var overDueCount=0, overDueIds=[], jobDuration=[];
+          console.log("overDueRes Permissions"+ kk,"Count =>", overDueRes.length,"===>", overDueRes);
+          var overDueCount=0, overDueIds=[], jobDuration=[], currentStage;
+
           if(overDueRes.length > 0 && overDueRes[0].hasOwnProperty('overDueCount')){
-             overDueCount=overDueRes[0].overDueCount;
-             overDueIds=overDueRes[0].overDueIds;
-             jobDuration=overDueRes[0].jobDuration;
+            for(let overdueData of  overDueRes){
+              currentStage=overdueData._id[0];
+              overDueCount=overdueData.overDueCount;
+              overDueIds=overdueData.overDueIds;
+              jobDuration=overdueData.jobDuration;
+              OverDueData.push({teams: "Permission", currentStage: currentStage, overDueCount:overDueCount, overDueIds:overDueIds, jobDuration:jobDuration});
+            }
           }
-          OverDueData.push({teams: "Permission", overDueCount:overDueCount, overDueIds:overDueIds, jobDuration:jobDuration});
         //  console.log(overDueRes.length,JSON.stringify(overDueRes));
         }).catch((Err)=>{ console.log("Err in OverDue data Permissions", Err);});
        }

@@ -6,10 +6,24 @@
     <div class="col-12">
       <div class="card rounded-0">
         <div class="card-body">
-          <div class="border-bottom pb-2">
-            <div class="font-weight-bold">
-              <h6><i class="fa fa-filter" aria-hidden="true"></i> Filter</h6>
+          <div class="row align-items-center">
+            <div class="col-md-9"><div class="font-weight-bold">
+              <h6><i class="fa fa-filter" aria-hidden="true"></i> Filter</h6></div></div>
+            <div class="col-md-3">
+              <div class="input-group">
+                <input type="text" class="form-control" v-model="frm.job_key" placeholder="Job Key (eg. SCI-1164)" aria-label="" aria-describedby="basic-addon1">
+                <div class="input-group-append">
+                  <button class="btn btn-secondary btn-sm" @click.prevent="jobkey_btn()" type="button">Search</button>
+                </div>
+              </div>
+              <i v-if="keyfound ==false" style="font-size:12px; color:red"> Job key does't exist.</i>
             </div>
+          </div>
+           <div class="border-bottom pb-2">
+            <!-- <div class="font-weight-bold">
+              <h6><i class="fa fa-filter" aria-hidden="true"></i> Filter</h6>
+              
+            </div> -->
           </div>
           <div class=" row mt-3">
             <div class="col-md-3">
@@ -125,7 +139,7 @@
   import APIS from '@/lib/APIS';
   export default {
      name: 'input-components',
-     props:['compaigns','WkPresets','jobTypes','curStatusDts','frmDataSubmit','compaignIdChanged','Module','Grade'],
+     props:['compaigns','WkPresets','jobTypes','curStatusDts','frmDataSubmit','compaignIdChanged','Module','Grade','searchBykey'],
     components: {
       VueTagsInput,
     },data:()=>({
@@ -134,7 +148,8 @@
       status: '',
       tags: [],
       workflowPreset: '',
-      frm: {compaignId:'', workflowPreset:'', workflowPresetError:false, jobTypesError:false, currentStatus1:"",currentStatus: [], jobType: '', startDate:'', endDate:'' },
+      keyfound:true,
+      frm: {job_key:'', compaignId:'', workflowPreset:'', workflowPresetError:false, jobTypesError:false, currentStatus1:"",currentStatus: [], jobType: '', startDate:'', endDate:'' },
       autocompleteItems : APIS.getCurrentStatus(),
       autoworkflowPreset :APIS.getworkflowPreset,
       validation: [{
@@ -219,6 +234,31 @@
         this.checkJobType=true;
         //this.frmDataSubmit(this.frm, this.tags);
        // window.location.reload();
+      },
+      async jobkey_btn(){
+        var data=await this.searchBykey(this.frm.job_key);
+        console.log("data== >",data);
+        debugger
+        if(data.hasOwnProperty('workflowPreset')){
+          this.frm.workflowPreset=data.workflowPreset;
+          if(data.workflowPreset=="Permission" && data.hasOwnProperty('jobType') && data.jobType!=""){
+            if(data.jobType!="Unallocated"){
+              this.frm.jobType=data.jobType.decode();
+              this.checkJobType=true;
+            }else{
+              this.frm.jobType=data.jobType;
+              this.checkJobType=true;
+            }
+            this.frm.workflowPresetError=false;
+            this.frm.jobTypesError=false;
+           }else{
+              this.checkJobType=false;
+              this.frm.jobType="";
+          }
+          this.keyfound=true;
+        }else{
+          this.keyfound=false;
+        }
       }
     }
      

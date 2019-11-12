@@ -287,9 +287,20 @@ import DateRangePicker from '@/components/dateRangePicker.vue';
       autocompleteItems : APIS.getCurrentStatus(),
       autoworkflowPreset : [], //APIS.getworkflowPreset,
       ScoreCard:{ totalJobs:"N/A", Exptat:"N/A", MedianDur:"N/A", NumOver:'N/A', NumHold:"N/A"},
-      validation: [{ classes: 'min-length',  rule: tag => tag.text.length < 6, }, 
-      { classes: 'no-numbers',  rule: /^([^0-9]*)$/, }, { classes: 'avoid-item', rule: /^(?!Cannot).*$/, disableAdd: true,},
-      { classes: 'no-braces', rule: ({ text }) => text.indexOf('{') !== -1 || text.indexOf('}') !== -1, }],
+      validation: [{
+        classes: 'min-length',
+        rule: tag => tag.text.length < 6,
+      }, {
+        classes: 'no-numbers',
+        rule: /^([^0-9]*)$/,
+      }, {
+        classes: 'avoid-item',
+        rule: /^(?!Cannot).*$/,
+        disableAdd: true,
+      }, {
+        classes: 'no-braces',
+        rule: ({ text }) => text.indexOf('{') !== -1 || text.indexOf('}') !== -1,
+      }],
       WeeklyJobsCData:[['Weeks', 'Created Jobs','Completed Jobs'],
                       // ['1 jan -7 jan', 5, 2],
                       // ['8 jan -15 jan', 25, 11],
@@ -514,14 +525,46 @@ import DateRangePicker from '@/components/dateRangePicker.vue';
 
       var GraphCreatedJobs=await APIS.created_complated(this.frm);//.CreatedJobs;
       var MedianData=await APIS.medianoverdueperteam(this.frm);
+      var tempData=await APIS.formedian(this.frm);
+      var tempData2=new Array();
+      for(let tempdt of tempData){
+          var tmp2=tempdt.Preset_Stages.map(dt=> ({ 
+            TeamName : responcibleTeam( ((dt.hasOwnProperty('name'))?dt.name: dt.StageNames) , tempdt.presetName, tempdt), 
+            StageDuration :  parseFloat( dateDiffC(dt.start_date,  ((dt.hasOwnProperty('job_date_finished'))?dt.job_date_finished: new Date()) ) ),
+            date:{start:dt.start_date, end:dt.job_date_finished},
+            position : dt.position
+            }));
+          tempData2.push({Preset_Stages:tmp2, id:tempdt.id, presetName: tempdt.presetName}  );
+      }
+      debugger
+      for(let l =0; l< tempData2.length; l++){
+           tempData2[l].Preset_Stages= tempData2[l].Preset_Stages.reduce((m, d)=>{
+                    if(!m[d.TeamName]){
+                      m[d.TeamName] = {...d, count: 1};
+                      return m;
+                    }
+                    m[d.TeamName].StageDuration += d.StageDuration ;
+                    m[d.TeamName].count += 1;
+                    return m;
+                },{});
+      }
+      debugger
       var mediamOverDue=MedianData.OverDueData;
       mediamOverDue=mediamOverDue.map(data => ({
           teams: data.teams, 
           resteams:  responcibleTeam(data.currentStage, data.teams), 
-          jobDuration:data.jobDuration,
+          jobDuration: data.jobDuration,
           overDueIds: data.overDueIds,
           overDueCount:data.overDueCount
         }));
+
+      // mediamOverDue=mediamOverDue.map(data => ({
+      //     teams: data.teams, 
+      //     resteams:  responcibleTeam(data.currentStage, data.teams), 
+      //     jobDuration: data.jobDuration,
+      //     overDueIds: data.overDueIds,
+      //     overDueCount:data.overDueCount
+      //   }));
       
       var permissionResponce=data.permissionResponce;
       permissionResponce=permissionResponce.map(d=>  d.data.map(dd=>({ jobDuration: dd.duration, CalDuration: dd.CalDuration, resteams:  responcibleTeam(dd.stageName, d.permission), teams:d.permission ,  }) ));
@@ -571,7 +614,6 @@ import DateRangePicker from '@/components/dateRangePicker.vue';
       var ClipArtArray=permissionResponce.filter((data)=>data.team=="Clip Art");
       // devide Team Wise Data Code //
       
-      debugger
       var permissionData=mediamOverDue.filter((data)=>data.teams=="Permission");
       var PermissionTeam1=permissionData.filter( dt => dt.resteams=='Art Team');
       var duration1=[];
@@ -814,10 +856,18 @@ function getPercentile(arrays, percentileValue){
     return data||0;
 }
 function dateDiffC(date1, date2){
-        var dateFirst = new Date(date1);
-        var dateSecond = new Date(date2);
-        var timeDiff = Math.abs(dateSecond.getTime() - dateFirst.getTime());
-        return  Math.ceil(timeDiff / (1000  *3600*  24));
+      var d2, d1=new Date(date1);  
+  if( typeof date2 === "undefined"|| date2 === null  ||date2==""){
+    d2=new Date();
+  }else{
+    d2=new Date(date2);
+  }
+  var timeDiff = Math.abs(d2.getTime() - d1.getTime());
+  return parseFloat(timeDiff/86400000).toFixed(1);
+        // var dateFirst = new Date(date1);
+        // var dateSecond = new Date(date2);
+        // var timeDiff = Math.abs(dateSecond.getTime() - dateFirst.getTime());
+        // return  Math.ceil(timeDiff / (1000  *3600*  24));
       }   
   function roundTo(n, digits) {
  		var negative = false;
@@ -878,8 +928,9 @@ function MpsDateFormat(d) {
   if (day.length < 2) day = '0' + day;
   return [year, month, day].join('-');
 }
-function responcibleTeam(name, PresetName){
+function responcibleTeam(name, PresetName, id){
   var Teamname="";
+  try{
  if(name!=""){
    if(name.toLowerCase().indexOf("research asset and original source")!=-1 ||
    name.toLowerCase().indexOf("select job type")!=-1 ||
@@ -926,6 +977,9 @@ function responcibleTeam(name, PresetName){
      Teamname="On Hold Team";
    }
  }
+  }catch(e){
+    console.log("Error not found stage name",name, PresetName, id, e);
+  }
  return Teamname;
 }//getRandomColor
 function getColorByName( name ) {
@@ -968,4 +1022,3 @@ z-index: 99;
   left:40%;
 }
 </style>
-

@@ -21,3 +21,9 @@ npm run lint
 ```
 # bynder
     
+
+Change for configuration files 
+1. add changes for Mysql config
+2. add changes for mongodb config
+3. add change for API URL in friend in.
+4. 

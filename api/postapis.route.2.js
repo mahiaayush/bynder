@@ -94,23 +94,7 @@ function  excuteURL(URLexc){
     console.log("Error:", Err);
   }
 }
-postRoutes.route('/testData/:campaignId').get(function (req, res) {
-  let campaignId = req.params.campaignId;
-  Mdb.bynder_jobs.find({id:campaignId},{Preset_Stages:1, job_active_stage:1, job_previous_stage:1,
-     job_next_stage:1, job_stages:1, job_date_finished:1, job_duration:1 }).then((data)=>{
-    res.send(data);
-  }).catch((Err)=>{
-    console.log("test=>", Err);
-  });
-});
-postRoutes.route('/testData2/:campaignId').get(function (req, res) {
-  let campaignId = req.params.campaignId;
-  Mdb.bynder_jobs.find({job_key:campaignId},{Preset_Stages:1, dateCreated:1,  job_date_finished:1 }).then((data)=>{
-    res.send(data);
-  }).catch((Err)=>{
-    console.log("test=>", Err);
-  });
-});
+
 postRoutes.route('/jobsbycampaignid/:campaignId').get(function (req, res) {
   let campaignId = req.params.campaignId;
   var request_data=appConfig.getActionInfo("jobsbycampaignid", campaignId);
@@ -217,11 +201,11 @@ postRoutes.route('/syncdatajobs').get(function (req, res) {
                                                 };
                                               }
                                                 
-                                                Mdb.bynder_jobs.updateOne({ id : JobsResult[k].id }, { $set: $set }).then((res) => {
-                                                    console.log( JobsResult[k].id,"==>", res);
-                                                }).catch((Err) => {
-                                                    console.log("unable to updated bynder_jobs ID:", JobsResult[k].id, Err);
-                                                });
+                                              Mdb.bynder_jobs.updateOne({ id : JobsResult[k].id }, { $set: $set }).then((res) => {
+                                                  console.log( JobsResult[k].id,"==>", res);
+                                              }).catch((Err) => {
+                                                  console.log("unable to updated bynder_jobs ID:", JobsResult[k].id, Err);
+                                              });
                                             }
                                         }else if(docs[0].job_active_stage.status!= JobsResult[k].job_active_stage.status){
                                             var job_date_finished="";
@@ -794,7 +778,24 @@ postRoutes.route('/updateriskimpact').get(function (req, res) {
   });
   
 });
-
+postRoutes.route('/testData/:campaignId').get(function (req, res) {
+  let campaignId = req.params.campaignId;
+  Mdb.bynder_jobs.find({id:campaignId},{Preset_Stages:1, job_active_stage:1, job_previous_stage:1,
+     job_next_stage:1, job_stages:1, job_date_finished:1, job_duration:1 }).then((data)=>{
+    res.send(data);
+  }).catch((Err)=>{
+    console.log("test=>", Err);
+  });
+});
+postRoutes.route('/testData2/:campaignId').get(function (req, res) {
+  let campaignId = req.params.campaignId;
+  Mdb.bynder_jobs.find({job_key:campaignId},{Preset_Stages:1, dateCreated:1,  job_date_finished:1 }).then((data)=>{
+    res.send(data);
+  }).catch((Err)=>{
+    console.log("test=>", Err);
+  });
+});
+///=========
 module.exports = postRoutes;
 function dateDiffC(date1, date2){
   var dateFirst = date1;

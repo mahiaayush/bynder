@@ -7,14 +7,16 @@ var appConfig = {
     key: '71BEFFCC-2CC9-476D-93A8A79BB92BD87B',
     secret: 'a8de7d89165b8234405b35c83553a318'
   },token : {
-    key: 'E07A70F7-4145-44D6-AC53C771E792A609',
-    secret: '2a044b35eebcb94d315b77f02a31a86b'
+    key: 'B2A7A47A-66B0-4880-A03FB70A25683DA1',
+    secret: '563e1def9f296439af4906b0a60bd7b4'
   },
   apiAction:  [
       { action: 'jobsbycampaignid', URL:`https://greatminds.getbynder.com/api/workflow/campaigns/`, extraConfog: true, other:`/jobs`},
       { action: 'getPresetByJobs', URL:'https://greatminds.getbynder.com/api/workflow/presets/job/', extraConfog: true, other:''},
       { action: 'users', URL:'https://greatminds.getbynder.com/api/workflow/users/', extraConfog: false, other:''},
       { action: 'metapropertiesbyid', URL:'https://greatminds.getbynder.com/api/workflow/metaproperties/', extraConfog: true, other:''},
+      { action: 'getAssets', URL:'https://greatminds.getbynder.com/api/v4/media/', extraConfog: true, other:''},
+      { action: 'getAssetProp', URL:'https://greatminds.getbynder.com/api/v4/metaproperties', extraConfog: true, other:''},
       { action: 'test4', URL:'', extraConfog: false, other:''}
 ], getActionInfo (name, id) { // same as "sayHi: function()"
         var data=this.apiAction.filter(function(data) {

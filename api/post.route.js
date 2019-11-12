@@ -187,7 +187,7 @@ postRoutes.route('/getjobsbycampaignid/').post(function (req, res) {
     query.push(lookup3);
    // query.push(lookup4);
     let criteria = [];
-    if(workflowPreset!=""){ criteria.push({ 'presetName':{$regex:  new RegExp(".*"+workflowPreset+".*") }}); }
+    if(workflowPreset!=""){ criteria.push({ 'presetName':{ $regex:  new RegExp(".*"+workflowPreset+".*") }}); }
     if(currentStatus.length>0){ criteria.push({ 'job_active_stage.status':{$in:  currentStatus }}); }
     if(true){ criteria.push({ 'job_active_stage.status':{"$ne":"Cancelled" }}); }
     if(jobType!=""  && jobType=="Unallocated"){
@@ -491,7 +491,7 @@ postRoutes.route('/mergeautomationdata').get(function (req, res) {
   });
 });
 postRoutes.route('/stageinof').get(function (req, res) {
-  Mdb.bynder_jobs.find({job_key: 'SCI-1121'},{ jobID:1, Preset_Stages:1, presetstages:1 }).then((data)=>{
+  Mdb.bynder_jobs.find({isUpdated: true},{ jobID:1, Preset_Stages:1, presetstages:1 }).then((data)=>{
     if(data.length > 0){
        for(let d=0; d < data.length; d++){
          let jobID= data[d].jobID, Preset_Stages= data[d].Preset_Stages, presetstages= data[d].presetstages;
@@ -502,7 +502,7 @@ postRoutes.route('/stageinof').get(function (req, res) {
               Preset_Stages[k].id=filterd[0].ID;
              }
           }
-          console.log("Modified data:", JSON.stringify(Preset_Stages) );
+          //console.log("Modified data:", JSON.stringify(Preset_Stages) );
          // process.exit();
           Mdb.bynder_jobs.updateOne({ jobID: jobID},{ $set: {
             Preset_Stages: Preset_Stages

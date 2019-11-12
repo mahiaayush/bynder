@@ -1,6 +1,6 @@
-//const HOST_URL="http://localhost:4000";
-//  const HOST_URL="http://greatmindsapi.mpstechnologies.com";
-const HOST_URL="http://greatmindapi.mpstechnologies.com";
+const HOST_URL="http://localhost:4000";
+//  const HOST_URL="http://greatmindsapi.mpstechnologies.com"; // Demo API
+//const HOST_URL="http://greatmindapi.mpstechnologies.com";
 
 const API_URL=HOST_URL+"/posts/getAllcampaigns";
 //const JobType_URL=HOST_URL+"/data/metapropertiesbyid/";
@@ -20,6 +20,8 @@ const GradeModule=HOST_URL+"/posts/getgrademodule/";
 const LoadedData=HOST_URL+"/scoreCard/scorecardload/";
 const created_complated=HOST_URL+"/scoreCard/createdcompletedjobs/";
 const medianoverdueperteam=HOST_URL+"/scoreCard/medianoverdueperteam";
+const formedian=HOST_URL+"/scoreCard/formedian/";
+
 const getOverDueJobs=HOST_URL+"/scoreCard/getoverduejobs";
 const ModuleID="7388493928bc4a9aa57ca65306ed1579";
 const GradeId="c0ac0a86e65f4f7ebd88dbd7e77965ef";
@@ -152,6 +154,12 @@ export default{
                 data= response.data;
             });
          return data;
+    },async formedian(obj){
+        let data;
+        await axios.get(formedian, obj).then(response => {
+            data= response.data;
+        });
+     return data;
     }, async medianoverdueperteam(obj){
         let data;
             await axios.post(medianoverdueperteam, obj).then(response => {

@@ -11,7 +11,7 @@
               <h6><i class="fa fa-filter" aria-hidden="true"></i> Filter</h6></div></div>
             <div class="col-md-3">
               <div class="input-group">
-                <input type="text" class="form-control" v-model="frm.job_key" placeholder="Job Key (eg. SCI-1164)" aria-label="" aria-describedby="basic-addon1">
+                <input type="text" class="form-control" @keydown.enter.prevent="jobkey_btn" v-model="frm.job_key" placeholder="Job Key (eg. SCI-1164)" aria-label="" aria-describedby="basic-addon1">
                 <div class="input-group-append">
                   <button class="btn btn-secondary btn-sm" @click.prevent="jobkey_btn()" type="button">Search</button>
                 </div>
@@ -190,6 +190,9 @@
       });
   },
     methods:{
+        onEnter(){
+          alert(111)
+        },
        setEndDate(d){
          this.frm.endDate=d;
        }, setStartDate(d){
